@@ -1,0 +1,98 @@
+:root {
+    --geel: #F2C76E;
+    --licht: #eaf4f4;
+    --groen: #6b9080;
+    --donkergroen: #415e50;
+    --rood: #d7594d;
+    --paars: #ab92b9;
+    --achtergrond: #f8f8f8;
+    --oranje: #f5b06f;
+}
+
+body {
+    font-family: "Roboto";
+    overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Ubuntu";
+    color: var(--donkergroen);
+    font-weight: 400;
+}
+
+.groot {
+    font-size: 4rem;
+    line-height: 3.6rem;
+}
+
+.heelgroot {
+    font-size: 8rem;
+    line-height: 6rem;
+}
+
+.rechts {
+    text-align: right;
+    width: 100%;
+}
+
+.links {
+    text-align: left;
+    width: 100%;
+}
+
+.center {
+    text-align: center;
+}
+
+.vertcenter {
+    justify-content: center;
+    align-content: center;
+}
+
+.w50 {
+    width: 50%;
+}
+
+.h75 {
+    height: 75vh;
+}
+
+.p1 {
+    padding: 1rem 0 1rem 0;
+}
+
+.p2 {
+    padding: 2rem 0 2rem 0;
+}
+
+.p4 {
+    padding: 4rem 0 4rem 0;
+}
+
+.abs {
+    position: relative;
+}
+
+.fullsize {
+    width: 100%;
+    height: auto;
+}
+
+.fullheight {
+    width: auto;
+    height: 100%;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+
+.bgrood {
+    background-color: red;
+}
