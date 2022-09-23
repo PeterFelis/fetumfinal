@@ -2,6 +2,7 @@
     <title>Hoi! start hier | Fetum</title>
 </svelte:head>
 
+
 <div class="fullsize abs">
     <figure>
         <img
@@ -11,7 +12,7 @@
         />
     </figure>
 
-    <h1 class="introText px1">
+    <h1 class="introText">
         Hoofdtelefoons en electronica voor zorg, educatie en iedereen die we van
         dienst kunnen zijn.
     </h1>
@@ -75,7 +76,7 @@
 
 <div>
     <img
-        class="fullsize"
+        class="fullwidth"
         src="/afbeeldingen/muis.png"
         alt="oranje draadloze muis"
     />
@@ -97,9 +98,10 @@
     .introText {
         text-align: center;
         position: absolute;
-        bottom: 2rem;
+        top: 0vh;
         left: 0rem;
         width: 100%;
+        padding:0 1rem 0 1rem;
     }
 
     .produkten {
@@ -124,4 +126,16 @@
     .svgblob:hover .rot {
         transform: rotate(-180deg);
     }
+
+
+    @media (min-width: 991px) {
+    .introText {
+        text-align: center;
+        position: absolute;
+        top: 100vh;
+        left: 0rem;
+        width: 100%;
+        padding:0 10rem 0 10rem;
+    }
+}
 </style>

@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="fullsize">
     <iframe
         class="h75"
         title="fetum"

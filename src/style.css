@@ -78,7 +78,12 @@ h6 {
     position: relative;
 }
 
-.fullsize {
+.fullsize{
+    width:100vw;
+    height:100vh;
+}
+
+.fullwidth {
     width: 100%;
     height: auto;
 }
