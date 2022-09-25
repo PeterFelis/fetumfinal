@@ -2,29 +2,27 @@
     <title>VVV cheques, bestellen, klant worden en zo | Fetum</title>
 </svelte:head>
 
-<div class="container">
-    <div class="grid">
-        <div class="grid h75 vertcenter">
-            <img
-                class="fullwidth"
-                src="/afbeeldingen/hp188.png"
-                alt="hoofdtelefoon"
+<div class="container p2 h75 grid2r vertcenter">
+    <div>
+        <img
+            class="fit"
+            src="/afbeeldingen/hp188.png"
+            alt="hoofdtelefoon"
             />
-        </div>
-        <div class="grid vertcenter h75">
-            <div>
-                <h1 class="groot center">Webshop Info</h1>
-                <h2 class="center">Over u en ons. Samen.</h2>
-                <h3 class="center">
+    </div>
+    <div>
+            <h1 class="groot center">Webshop Info</h1>
+            <h2 class="center">Over u en ons. Samen.</h2>
+            <h3 class="center">
                     Aankopen, VVV cheques, klant worden en wat er allemaal
                     mogelijk is.
-                </h3>
-            </div>
-        </div>
+            </h3>
     </div>
+</div>
 
-    <div class="grid p4">
-        <div class="grid vertcenter">
+<div class='container'>
+    <div class="grid2r p2 vertcenter">
+        <div class="fit">
             <img src="/afbeeldingen/2710-rood.png" />
         </div>
         <main>
@@ -60,7 +58,7 @@
         </main>
     </div>
 
-    <div class="grid p4">
+    <div class="grid2r p4 vertcenter">
         <div>
             <h2>VVV cadeaukaart</h2>
             <p>
@@ -70,7 +68,7 @@
                 op een door u op te geven email adres. Dit geldt niet voor
                 bestellingen buiten onze Webshop om.
             </p>
-            <div class="grid">
+            <div class="grid2">
                 <div>
                     <div class="font-bold">Orderhoogte</div>
                     <div>300,00</div>
@@ -87,10 +85,9 @@
                 </div>
             </div>
         </div>
-        <div class="grid">
-            <div class="vertcenter">
+        <div>
                 <img
-                    class="fullheight"
+                    class="fit"
                     src="/afbeeldingen/vvv.png"
                     alt="vvv cadeaukaart"
                 />
@@ -101,18 +98,18 @@
                         Voor meer info over de VVV bon klik hier
                     </a>
                 </div>
-            </div>
         </div>
+        
     </div>
 
-    <div class="grid p4">
-        <div class="grid vertcenter">
+    <div class="grid2r p4 vertcenter">
+        <div>
             <img
                 src="/afbeeldingen/2710-rood.png"
                 alt="gekleurde hoofdtelefoon"
             />
         </div>
-        <main>
+        <div>
             <h2>Bestellen</h2>
             <p>
                 In onze webshop kunt u direct bestellen. U koopt per
@@ -145,6 +142,6 @@
                 verschillende verpakkingseenheden dan krijgt u automatisch de
                 laagste prijs die voor u geldt.
             </p>
-        </main>
+        </div>
     </div>
 </div>

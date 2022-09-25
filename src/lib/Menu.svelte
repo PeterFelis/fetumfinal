@@ -60,10 +60,11 @@ let zichtbaar=false;
 	}
 
 	.kleinknop{
-		position: absolute;
+		position: fixed;
 		left:1em;
 		top:1em;
 		visibility: visible;
+		z-index: 100;
 	}
 
 

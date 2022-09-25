@@ -2,15 +2,15 @@
     <title>contact - let's talk | Fetum</title>
 </svelte:head>
 
-<div class="container">
-    <div class="grid vertcenter h75">
-        <div>
-            <h1 class="groot center">Contact<br />info</h1>
-            <h2 class="center">Altijd handig</h2>
-        </div>
 
-        <div class="grid">
-            <div class="rechts">
+<div class="container p4 h75 grid2r vertcenter">
+    <div>
+        <h1 class="groot center">Contact<br />info</h1>
+        <h2 class="center">Altijd handig</h2>
+    </div>
+
+    <div class="grid2 g1">
+        <div class="rechts">
                 <div>Naam</div>
                 <div>Adres</div>
                 <div>Postcode</div>
@@ -21,8 +21,8 @@
                 <div>BTW nummer:</div>
                 <div>Bank</div>
                 <div>BIC</div>
-            </div>
-            <div>
+        </div>
+        <div>
                 <div>Fetum bv</div>
                 <div>Grote Waard 36</div>
                 <div>2675 BX</div>
@@ -33,10 +33,10 @@
                 <div>801462.265.B01</div>
                 <div>NL78 KNAB 0724 8909 47</div>
                 <div>KNABNL2H</div>
-            </div>
         </div>
     </div>
 </div>
+
 
 <div class="fullsize">
     <iframe
@@ -50,3 +50,5 @@
         referrerpolicy="no-referrer-when-downgrade"
     />
 </div>
+
+
