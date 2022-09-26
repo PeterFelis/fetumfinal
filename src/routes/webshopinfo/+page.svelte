@@ -2,25 +2,20 @@
     <title>VVV cheques, bestellen, klant worden en zo | Fetum</title>
 </svelte:head>
 
-<div class="container p2 h75 grid2r vertcenter">
+<div class="container p4 h75 grid2r vertcenter">
     <div>
-        <img
-            class="fit"
-            src="/afbeeldingen/hp188.png"
-            alt="hoofdtelefoon"
-            />
+        <h1 class="groot center">Webshop Info</h1>
+        <h2 class="center">Over u en ons. Samen.</h2>
+        <h3 class="center">
+            Aankopen, VVV cheques, klant worden en wat er allemaal mogelijk is.
+        </h3>
     </div>
     <div>
-            <h1 class="groot center">Webshop Info</h1>
-            <h2 class="center">Over u en ons. Samen.</h2>
-            <h3 class="center">
-                    Aankopen, VVV cheques, klant worden en wat er allemaal
-                    mogelijk is.
-            </h3>
+        <img class="fit" src="/afbeeldingen/hp188.png" alt="hoofdtelefoon" />
     </div>
 </div>
 
-<div class='container'>
+<div class="container">
     <div class="grid2r p2 vertcenter">
         <div class="fit">
             <img src="/afbeeldingen/2710-rood.png" />
@@ -86,20 +81,19 @@
             </div>
         </div>
         <div>
-                <img
-                    class="fit"
-                    src="/afbeeldingen/vvv.png"
-                    alt="vvv cadeaukaart"
-                />
-                <div>
-                    <a
-                        href="https://www.vvvcadeaukaarten.nl/besteden/vvv-online-cadeaucode/webwinkels"
-                    >
-                        Voor meer info over de VVV bon klik hier
-                    </a>
-                </div>
+            <img
+                class="fit"
+                src="/afbeeldingen/vvv.png"
+                alt="vvv cadeaukaart"
+            />
+            <div>
+                <a
+                    href="https://www.vvvcadeaukaarten.nl/besteden/vvv-online-cadeaucode/webwinkels"
+                >
+                    Voor meer info over de VVV bon klik hier
+                </a>
+            </div>
         </div>
-        
     </div>
 
     <div class="grid2r p4 vertcenter">
@@ -145,3 +139,9 @@
         </div>
     </div>
 </div>
+
+<style>
+    h1 {
+        margin: 0;
+    }
+</style>
