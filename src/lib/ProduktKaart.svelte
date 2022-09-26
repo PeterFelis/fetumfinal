@@ -13,6 +13,7 @@
 	let opslaan;
 
 	let afbeelding;
+	let pdf;
 	
 	let files;
 
@@ -23,22 +24,22 @@
 		let ext=(naam.split('.'));
 		let nieuweafbeelding=produkt.id+"."+ext[1];
 		console.log(nieuweafbeelding)
-		if (produkt.afbeelding){
-			let {data,error} = await supabase.storage.from('produkten').remove(produkt.afbeeldingingen);
-				if (error) { console.log('verwijderen niet geluk', error)}
-			return;
+
+		if (produkt.afbeeldingen){
+			console.log(produkt.afbeeldingen[0]);
+			let {error} = await supabase.storage.from('produkten').remove([nieuweafbeelding]);
+				console.log('verwijderen:',error)
+				if (error) return;
 			}
 
-		let {data2,error2} =await supabase.storage.from('produkten').upload(nieuweafbeelding, files[0]);
+		let {data,error} = await supabase.storage.from('produkten').upload(nieuweafbeelding, files[0]);
 		//let { data, error } = await supabase.storage.from('produkten').update(produkt.id+'.'+naam[1], files[0]);
-		
-		if (error2) {
-			console.log('bijwerkenAfbeelding->storage afbeelding',error2);
+			console.log(' uploaden afbeelding data ',data, error);
+		if (error) {
+			console.log('bijwerkenAfbeelding->storage afbeelding',error);
 			return;
 		}
 
-		//let result= data2;
-		//produkt.afbeeldingen=result.Key;
 		produkt.afbeeldingen=nieuweafbeelding;
 		let {data3,error3} = await supabase.from('producten')
 		.update({afbeeldingen: [produkt.afbeeldingen] })
@@ -49,11 +50,43 @@
 		}
 		afbeelding = URL.createObjectURL(files[0]);
 	}
-		
+	
+	const bijwerkenpdf = async () =>{
+		let naam = (files[0].name);
+		let ext=(naam.split('.'));
+		let nieuwepdf=produkt.id+"."+ext[1];
+		console.log(nieuwepdf)
+		if (produkt.pdf){
+			console.log('wissen oude pdf')
+			let {data,error} = await supabase.storage.from('pdfs').remove(produkt.pdf);
+				if (error) { console.log('pdf verwijderen niet geluk', error)}
+			return;
+			}
+
+		let {data2,error2} =await supabase.storage.from('pdfs').upload(nieuwepdf, files[0]);
+		//let { data, error } = await supabase.storage.from('produkten').update(produkt.id+'.'+naam[1], files[0]);
+		let {publicURL,error4} =await supabase.storage.from('pdfs').getPublicUrl(nieuwepdf);
+			console.log('opgeladen pdf ',publicURL)
+		if (error4) {
+			console.log('bijwerkenpfd->storage afbeelding',error4);
+			return;
+		}
+
+		produkt.pfd=nieuwepdf;
+		let {data3,error3} = await supabase.from('producten')
+		.update( {pdf: 'bier'})
+		.eq('id', produkt.id);
+		if (error3) {
+			console.log('bijwerkenpdf-> bijwerken pdf in database',error3);
+			return
+		}
+		pdf = publicURL;
+		console.log (pdf);
+
+	}
+	
 
 	const ophalenAfbeelding = async (afbeelding) => {
-		//let split = afbeelding.split("/");
-		//const { data, error } = await supabase.storage.from(split[0]).download(split[1]);
 		const { data, error } = await supabase.storage.from('produkten').download(afbeelding);
 		if (error) console.log(afbeelding,data,'nee');
 		else return URL.createObjectURL(data);
@@ -205,11 +238,16 @@
 		{/if}
 	{/if}
 
+	{#if produkt.pdf}
+	   {produkt.pdf}
+	{/if}
+
 	{#each produkt.prijzen as prijs}
 		{prijs.prijs} - {prijs.aantal}
 	{/each}
 
 	{#if editable}
+			image
 		<input
 			type="file"
 			bind:files
@@ -217,6 +255,18 @@
 				bijwerkenAfbeelding();
 				}}
 			accept="image/*"
+			/>
+	{/if}
+
+	{#if editable}
+		  pfd
+		<input
+			type="file"
+			bind:files
+			on:change={() => {
+				bijwerkenpdf();
+				}}
+			accept="application/pdf"
 			/>
 	{/if}
 
