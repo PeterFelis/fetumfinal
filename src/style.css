@@ -60,37 +60,37 @@ h6 {
 
 .p1 {
     padding-top: 1rem;
-    padding-bottom:1rem;
+    padding-bottom: 1rem;
 }
 
 .p2 {
     padding-top: 2rem;
-    padding-bottom:2rem;
+    padding-bottom: 2rem;
 }
 
 .p4 {
     padding-top: 4rem;
-    padding-bottom:4rem;
+    padding-bottom: 4rem;
 }
 
 .m1 {
     margin-top: 1rem;
-    margin-bottom:1rem;
+    margin-bottom: 1rem;
 }
 
 .m2 {
     margin-top: 2rem;
-    margin-bottom:2rem;
+    margin-bottom: 2rem;
 }
 
 .m4 {
     margin-top: 4rem;
-    margin-bottom:4rem;
+    margin-bottom: 4rem;
 }
 
-.fullsize{
-    width:100vw;
-    height:100vh;
+.fullsize {
+    width: 100vw;
+    height: 100vh;
 }
 
 .fullwidth {
@@ -103,13 +103,13 @@ h6 {
     height: 100%;
 }
 
-.fit{
-    width:100%;
-    height:auto;
+.fit {
+    width: 100%;
+    height: auto;
     object-fit: cover;
 }
 
-.rel{
+.rel {
     position: relative;
 }
 
@@ -120,29 +120,30 @@ h6 {
 /* gridstuff */
 /* normale 2 colum grid */
 
-.grid1{
-    display:grid;
+.grid1 {
+    display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
     height: 100%;
 }
 
-.grid2{
-    display:grid;
-    grid-template-columns: repeat(2,1fr);
+.grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     height: 100%;
 }
 
 /* 2 colum grid, bij klein boven, bij groot naast elkaar */
-.grid2r{
-    display:grid;
+.grid2r {
+    display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(2,1fr);
+    grid-template-rows: repeat(2, 1fr);
     height: 100%;
 }
+
 /* gap */
-.g1{
-    gap:1rem;
+.g1 {
+    gap: 1rem;
 }
 
 /* centreren alles in grid */
@@ -151,8 +152,8 @@ h6 {
 }
 
 
-.border{
-    border:1px solid red;
+.border {
+    border: 1px solid red;
 }
 
 .bgrood {
@@ -163,12 +164,7 @@ h6 {
 
 
 @media (min-width: 991px) {
- .grid2r{
-    grid-template-columns: repeat(2,1fr);
-    grid-template-rows: 1fr;
-}
-
-
-
-
-
+    .grid2r {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: 1fr;
+    }

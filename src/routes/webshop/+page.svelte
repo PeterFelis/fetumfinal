@@ -154,7 +154,7 @@
 		ingeklapt <input type="checkbox" bind:checked={ingeklapt} />
 	</div>
 
-	<div class="gridShop">
+	<div class="allover">
 		<div class="categorien" on:click={() => (produkttype = "")}>
 			<div>
 				<div>
@@ -224,7 +224,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div>
 			<h5 class="font-bold center">
 				{geselecteerdecategorie}
@@ -233,59 +232,74 @@
 					--> {produkttype}
 				{/if}
 			</h5>
-			{#await produkten then produkten}
-				{#each produkten as produkt}
-					{#if produkt.categorie == geselecteerdecategorie}
-						{#if produkttype == ""}
-							<a id={produkt.model} />
-							<Produkt
-								{produkt}
-								{editable}
-								{ingeklapt}
-								on:categorie={(e) => {
-									cats[cats.indexOf(geselecteerdecategorie)] =
-										e.detail.text;
-									geselecteerdecategorie = e.detail.text;
-								}}
-								on:typ={(e) => {
-									types[types.indexOf(e.detail.text.huidig)] =
-										e.detail.text.nieuw;
-									produkttype = e.detail.text.nieuw;
-									types = types;
-								}}
-							/>
-						{:else if produkt.type == produkttype}
-							<a id={produkt.model} />
-							<Produkt
-								{produkt}
-								{editable}
-								{ingeklapt}
-								on:categorie={(e) => {
-									cats[cats.indexOf(geselecteerdecategorie)] =
-										e.detail.text;
-									geselecteerdecategorie = e.detail.text;
-								}}
-								on:typ={(e) => {
-									types[types.indexOf(e.detail.text.huidig)] =
-										e.detail.text.nieuw;
-									produkttype = e.detail.text.nieuw;
-									types = types;
-								}}
-							/>
+			<div class="shop">
+				{#await produkten then produkten}
+					{#each produkten as produkt}
+						{#if produkt.categorie == geselecteerdecategorie}
+							{#if produkttype == ""}
+								<div>
+									<a id={produkt.model} />
+									<Produkt
+										{produkt}
+										{editable}
+										{ingeklapt}
+										on:categorie={(e) => {
+											cats[
+												cats.indexOf(
+													geselecteerdecategorie
+												)
+											] = e.detail.text;
+											geselecteerdecategorie =
+												e.detail.text;
+										}}
+										on:typ={(e) => {
+											types[
+												types.indexOf(
+													e.detail.text.huidig
+												)
+											] = e.detail.text.nieuw;
+											produkttype = e.detail.text.nieuw;
+											types = types;
+										}}
+									/>
+								</div>
+							{:else if produkt.type == produkttype}
+								<div>
+									<a id={produkt.model} />
+									<Produkt
+										{produkt}
+										{editable}
+										{ingeklapt}
+										on:categorie={(e) => {
+											cats[
+												cats.indexOf(
+													geselecteerdecategorie
+												)
+											] = e.detail.text;
+											geselecteerdecategorie =
+												e.detail.text;
+										}}
+										on:typ={(e) => {
+											types[
+												types.indexOf(
+													e.detail.text.huidig
+												)
+											] = e.detail.text.nieuw;
+											produkttype = e.detail.text.nieuw;
+											types = types;
+										}}
+									/>
+								</div>
+							{/if}
 						{/if}
-					{/if}
-				{/each}
-			{/await}
+					{/each}
+				{/await}
+			</div>
 		</div>
 	</div>
 </div>
 
 <style>
-	.gridShop {
-		display: grid;
-		grid-template-columns: 1fr 3fr;
-	}
-
 	.categorien {
 		padding: 0;
 		margin: 0;
@@ -308,5 +322,14 @@
 	}
 	.muis {
 		cursor: pointer;
+	}
+	.allover {
+		display: grid;
+		grid-template-columns: 1fr 3fr;
+	}
+
+	.shop {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
 	}
 </style>
