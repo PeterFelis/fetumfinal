@@ -20,6 +20,7 @@
 	$: cats = categorien;
 	$: types = [];
 	let typeLijstOpform = [];
+	let volgordeOpform = [];
 
 	let types = [];
 	let produkttype = "";
@@ -68,6 +69,12 @@
 		opslaan = setTimeout(() => aanpassentypeVolgnr(), 1000);
 	}
 
+	function dragPRODend() {
+		if (!editable) return;
+		if (opslaan) clearTimeout(opslaan);
+		opslaan = setTimeout(() => aanpassenprodVolgnr(), 1000);
+	}
+
 	function dragStart(e) {
 		if (!editable) return;
 		e.dataTransfer.effectAllowed = "move";
@@ -100,6 +107,22 @@
 		}
 	};
 
+	const aanpassenprodVolgnr = async () => {
+		let tijd;
+		for (
+			let teller = 0;
+			teller < volgordeOpform.childElementCount;
+			teller++
+		) {
+			tijd = volgordeOpform.children[teller].innerHTML.trim();
+
+			const { data, error } = await supabase
+				.from("producten")
+				.update({ prodVolg: teller })
+				.match({ model: tijd });
+		}
+	};
+
 	const aanpassentypeVolgnr = async () => {
 		let tijd;
 		for (
@@ -117,106 +140,143 @@
 	};
 </script>
 
-<div class="container">
-	editabtle <input type="checkbox" bind:checked={editable} />
-	ingeklapt <input type="checkbox" bind:checked={ingeklapt} />
+<div class="container p4 h75 grid2r vertcenter">
+	<div>
+		<h1 class="groot center">Webshop<br />info</h1>
+		<h2 class="center">Alles op een rij</h2>
+	</div>
+	<div>plaatje</div>
 </div>
-<div class="container gridShop">
-	<div class="categorien" on:click={() => (produkttype = "")}>
-		<div>
-			<div>
-				<h2 class="font-bold">Categorien</h2>
-				<ul class="lijst" bind:this={lijst}>
-					{#await cats then cats}
-						{#each cats as cat}
-							<li
-								on:dragstart={dragStart}
-								on:dragleave={dragCATEnd}
-								on:dragover={dragOver}
-								draggable={editable}
-								on:click={() => {
-									geselecteerdecategorie = cat;
-									categorieKeuze();
-								}}
-							>
-								{cat}
-							</li>
-						{/each}
-					{/await}
-				</ul>
-			</div>
-			<div>
-				<h2 class="font-bold">Types</h2>
-				{#if produkten}
-					<ul bind:this={typeLijstOpform}>
-						{#each types as type}
-							<li
-								on:dragstart={dragStart}
-								on:dragleave={dragTYPEend}
-								on:dragover={dragOver}
-								draggable={editable}
-								on:click|stopPropagation={() =>
-									(produkttype = type)}
-							>
-								{type}
-								<!--categorieKeuze();-->
-							</li>
-						{/each}
-					</ul>
-				{/if}
-			</div>
-		</div>
+
+<div class="container">
+	<div class="p4">
+		editabtle <input type="checkbox" bind:checked={editable} />
+		ingeklapt <input type="checkbox" bind:checked={ingeklapt} />
 	</div>
 
-	<div>
-		<h3 class="font-bold center">
-			{geselecteerdecategorie}
-
-			{#if produkttype}
-				-->{produkttype}
-			{/if}
-		</h3>
-		{#await produkten then produkten}
-			{#each produkten as produkt}
-				{#if produkt.categorie == geselecteerdecategorie}
-					{#if produkttype == ""}
-						<Produkt
-							{produkt}
-							{editable}
-							{ingeklapt}
-							on:categorie={(e) => {
-								cats[cats.indexOf(geselecteerdecategorie)] =
-									e.detail.text;
-								geselecteerdecategorie = e.detail.text;
-							}}
-							on:typ={(e) => {
-								types[types.indexOf(e.detail.text.huidig)] =
-									e.detail.text.nieuw;
-								produkttype = e.detail.text.nieuw;
-								types = types;
-							}}
-						/>
-					{:else if produkt.type == produkttype}
-						<Produkt
-							{produkt}
-							{editable}
-							{ingeklapt}
-							on:categorie={(e) => {
-								cats[cats.indexOf(geselecteerdecategorie)] =
-									e.detail.text;
-								geselecteerdecategorie = e.detail.text;
-							}}
-							on:typ={(e) => {
-								types[types.indexOf(e.detail.text.huidig)] =
-									e.detail.text.nieuw;
-								produkttype = e.detail.text.nieuw;
-								types = types;
-							}}
-						/>
+	<div class="gridShop">
+		<div class="categorien" on:click={() => (produkttype = "")}>
+			<div>
+				<div>
+					<h4 class="font-bold">Categorien</h4>
+					<ul class="lijst muis" bind:this={lijst}>
+						{#await cats then cats}
+							{#each cats as cat}
+								<li
+									on:dragstart={dragStart}
+									on:dragleave={dragCATEnd}
+									on:dragover={dragOver}
+									draggable={editable}
+									on:click={() => {
+										geselecteerdecategorie = cat;
+										categorieKeuze();
+									}}
+								>
+									{cat}
+								</li>
+							{/each}
+						{/await}
+					</ul>
+				</div>
+				<div>
+					<h4 class="font-bold">Types</h4>
+					{#if produkten}
+						<ul bind:this={typeLijstOpform} class="muis">
+							{#each types as type}
+								<li
+									on:dragstart={dragStart}
+									on:dragleave={dragTYPEend}
+									on:dragover={dragOver}
+									draggable={editable}
+									on:click|stopPropagation={() =>
+										(produkttype = type)}
+								>
+									{type}
+									<!--categorieKeuze();-->
+								</li>
+							{/each}
+						</ul>
 					{/if}
+				</div>
+
+				<div>
+					<h4 class="font-bold">Modellen</h4>
+					{#if produkten}
+						<ul bind:this={volgordeOpform} class="muis">
+							{#each produkten as produkt}
+								{#if produkt.type == produkttype}
+									<a href="#{produkt.model}">
+										<li
+											on:dragstart={dragStart}
+											on:dragleave={dragPRODend}
+											on:dragover={dragOver}
+											draggable={editable}
+											on:click|stopPropagation={() =>
+												(produkttype = type)}
+										>
+											{produkt.model}
+										</li>
+									</a>
+								{/if}
+							{/each}
+						</ul>
+					{/if}
+				</div>
+			</div>
+		</div>
+
+		<div>
+			<h5 class="font-bold center">
+				{geselecteerdecategorie}
+
+				{#if produkttype}
+					--> {produkttype}
 				{/if}
-			{/each}
-		{/await}
+			</h5>
+			{#await produkten then produkten}
+				{#each produkten as produkt}
+					{#if produkt.categorie == geselecteerdecategorie}
+						{#if produkttype == ""}
+							<a id={produkt.model} />
+							<Produkt
+								{produkt}
+								{editable}
+								{ingeklapt}
+								on:categorie={(e) => {
+									cats[cats.indexOf(geselecteerdecategorie)] =
+										e.detail.text;
+									geselecteerdecategorie = e.detail.text;
+								}}
+								on:typ={(e) => {
+									types[types.indexOf(e.detail.text.huidig)] =
+										e.detail.text.nieuw;
+									produkttype = e.detail.text.nieuw;
+									types = types;
+								}}
+							/>
+						{:else if produkt.type == produkttype}
+							<a id={produkt.model} />
+							<Produkt
+								{produkt}
+								{editable}
+								{ingeklapt}
+								on:categorie={(e) => {
+									cats[cats.indexOf(geselecteerdecategorie)] =
+										e.detail.text;
+									geselecteerdecategorie = e.detail.text;
+								}}
+								on:typ={(e) => {
+									types[types.indexOf(e.detail.text.huidig)] =
+										e.detail.text.nieuw;
+									produkttype = e.detail.text.nieuw;
+									types = types;
+								}}
+							/>
+						{/if}
+					{/if}
+				{/each}
+			{/await}
+		</div>
 	</div>
 </div>
 
@@ -241,7 +301,12 @@
 		margin: 0;
 	}
 
-	h2 {
+	h2,
+	h4,
+	h5 {
 		margin: 0;
+	}
+	.muis {
+		cursor: pointer;
 	}
 </style>
