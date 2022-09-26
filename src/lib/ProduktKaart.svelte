@@ -20,69 +20,42 @@
 	let huidigeType = produkt.type;
 
 	const bijwerkenAfbeelding = async () =>{
-		let naam = (files[0].name);
-		let ext=(naam.split('.'));
-		let nieuweafbeelding=produkt.id+"."+ext[1];
-		console.log(nieuweafbeelding)
-
-		if (produkt.afbeeldingen){
-			console.log(produkt.afbeeldingen[0]);
-			let {error} = await supabase.storage.from('produkten').remove([nieuweafbeelding]);
-				console.log('verwijderen:',error)
-				if (error) return;
-			}
-
-		let {data,error} = await supabase.storage.from('produkten').upload(nieuweafbeelding, files[0]);
-		//let { data, error } = await supabase.storage.from('produkten').update(produkt.id+'.'+naam[1], files[0]);
-			console.log(' uploaden afbeelding data ',data, error);
-		if (error) {
-			console.log('bijwerkenAfbeelding->storage afbeelding',error);
-			return;
-		}
-
-		produkt.afbeeldingen=nieuweafbeelding;
-		let {data3,error3} = await supabase.from('producten')
-		.update({afbeeldingen: [produkt.afbeeldingen] })
+		await supabase.storage.from('produkten').remove([produkt.id.toString()]);
+		await supabase.storage.from('produkten').upload(produkt.id.toString(), files[0]);
+		let {data,error} = await supabase.from('producten')
+		.update({afbeeldingen: [produkt.id.toString()] })
 		.eq('id', produkt.id);
-		if (error3) {
-			console.log('bijwerkenAfbeelding-> bijwerken produkt in database',error3);
-			return
-		}
+		if (!error) console.log('bijwerkenAfbeelding-> bijwerken afbeelding in database gelukt');			
 		afbeelding = URL.createObjectURL(files[0]);
 	}
 	
+	const wisafbeelding = async () =>{
+		await supabase.storage.from('produkten').remove([produkt.id.toString()]);
+		let res = await supabase.from('producten')
+				.update({afbeeldingen:null})
+				.eq('id', produkt.id);
+		if (!res.error) console.log('afbeelding verwijderd en uit database gehaald');			
+		afbeelding = null;
+	}
+
 	const bijwerkenpdf = async () =>{
-		let naam = (files[0].name);
-		let ext=(naam.split('.'));
-		let nieuwepdf=produkt.id+"."+ext[1];
-		console.log(nieuwepdf)
-		if (produkt.pdf){
-			console.log('wissen oude pdf')
-			let {data,error} = await supabase.storage.from('pdfs').remove(produkt.pdf);
-				if (error) { console.log('pdf verwijderen niet geluk', error)}
-			return;
-			}
+		await supabase.storage.from('pdfs').remove([produkt.id.toString()]);
+		await supabase.storage.from('pdfs').upload(produkt.id.toString(), files[0]);
+		let {publicURL} =await supabase.storage.from('pdfs').getPublicUrl(produkt.id.toString());
+		let res = await supabase.from('producten')
+				.update({PDF:publicURL})
+				.eq('id', produkt.id);
+		if (!res.error) console.log('bijwerken pdf in database gelukt');			
+		produkt.PDF = publicURL;
+	}
 
-		let {data2,error2} =await supabase.storage.from('pdfs').upload(nieuwepdf, files[0]);
-		//let { data, error } = await supabase.storage.from('produkten').update(produkt.id+'.'+naam[1], files[0]);
-		let {publicURL,error4} =await supabase.storage.from('pdfs').getPublicUrl(nieuwepdf);
-			console.log('opgeladen pdf ',publicURL)
-		if (error4) {
-			console.log('bijwerkenpfd->storage afbeelding',error4);
-			return;
-		}
-
-		produkt.pfd=nieuwepdf;
-		let {data3,error3} = await supabase.from('producten')
-		.update( {pdf: 'bier'})
-		.eq('id', produkt.id);
-		if (error3) {
-			console.log('bijwerkenpdf-> bijwerken pdf in database',error3);
-			return
-		}
-		pdf = publicURL;
-		console.log (pdf);
-
+	const wispdf = async () =>{
+		await supabase.storage.from('pdfs').remove([produkt.id.toString()]);
+		let res = await supabase.from('producten')
+				.update({PDF:null})
+				.eq('id', produkt.id);
+		if (!res.error) console.log('PDF verwijderd en uit database gehaald');			
+		produkt.PDF = null;
 	}
 	
 
@@ -205,11 +178,11 @@
 				}}
 			/>
 			<div class="small">(type)</div>
-			</div>
+		</div>
 			{:else}
 			<h3>{@html produkt.type}</h3>
-	{/if}
-			</div>
+			{/if}
+		</div>
 			<div>
 				{#if afbeelding}
 					{#await afbeelding then afbeelding}
@@ -237,38 +210,49 @@
 			</div>
 		{/if}
 	{/if}
-
-	{#if produkt.pdf}
-	   {produkt.pdf}
-	{/if}
-
+	
 	{#each produkt.prijzen as prijs}
 		{prijs.prijs} - {prijs.aantal}
-	{/each}
+	{/each}		
 
-	{#if editable}
-			image
-		<input
-			type="file"
-			bind:files
-			on:change={() => {
-				bijwerkenAfbeelding();
-				}}
-			accept="image/*"
-			/>
+	{#if produkt.PDF}
+		<div>
+	   		<a href ="{produkt.PDF}" target="_blank">Download PDF voor meer info</a> 
+		</div>		
 	{/if}
 
-	{#if editable}
-		  pfd
-		<input
-			type="file"
-			bind:files
-			on:change={() => {
-				bijwerkenpdf();
-				}}
-			accept="application/pdf"
-			/>
-	{/if}
+	<div class='grid'>
+		{#if editable}	
+			{#if produkt.PDF}
+				<button on:click="{()=>wispdf()}">pdf verwijderen</button>
+			{/if}
+	
+			{#if produkt.afbeeldingen}
+				<button on:click="{()=>wisafbeelding()}">afbeelding verwijderen</button>
+			{/if}
+		<div> image
+			<input
+				type="file"
+				bind:files
+				on:change={() => {
+					bijwerkenAfbeelding();
+					}}
+				accept="image/*"
+				/>
+		</div>
+		<div> pfd
+			<input
+				type="file"
+				bind:files
+				on:change={() => {
+					bijwerkenpdf();
+					}}
+				accept="application/pdf"
+				/>
+		</div>
+		
+		{/if}
+	   </div>
 
 	</article>
 
