@@ -27,7 +27,7 @@
 	let geselecteerdecategorie = $settings.geselecteerdecategorie;
 
 	let editable = false;
-	let ingeklapt = false;
+	let ingeklapt = true;
 
 	const categorieKeuze = () => {
 		let hulp = [];

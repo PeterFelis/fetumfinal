@@ -235,7 +235,7 @@
 						{@html produkt.omschrijving}
 					</div>
 					{#if ingeklapt}
-						<h5>meer...</h5>
+						<a href='/webshop/{produkt.id}/'>meer...</a>
 					{/if}
 				</div>
 			{/if}
