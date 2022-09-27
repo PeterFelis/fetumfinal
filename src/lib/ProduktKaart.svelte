@@ -147,7 +147,7 @@
 </script>
 
 <div class="kaart">
-	<div class="gridcolafbeelding">
+	<div class="gridcolafbeelding g1">
 		<div>
 			{#if editable}
 				<div class="gridcol">
@@ -169,7 +169,7 @@
 
 			{#if editable}
 				<div class="gridcol">
-					<h3
+					<h5
 						contenteditable="true"
 						bind:innerHTML={produkt.headline}
 						on:keyup={() => {
@@ -180,7 +180,7 @@
 					<div class="small">(headline)</div>
 				</div>
 			{:else}
-				<h3>{@html produkt.headline}</h3>
+				<h5>{@html produkt.headline}</h5>
 			{/if}
 
 			{#if editable}
@@ -198,8 +198,6 @@
 					/>
 					<div class="small">(categorie)</div>
 				</div>
-			{:else}
-				<h3>{@html produkt.categorie}</h3>
 			{/if}
 
 			{#if editable}
@@ -214,38 +212,43 @@
 					/>
 					<div class="small">(type)</div>
 				</div>
-			{:else}
-				<h3>{@html produkt.type}</h3>
 			{/if}
-		</div>
-		<div>
-			{#if afbeelding}
-				{#await afbeelding then afbeelding}
-					<img src={afbeelding} />
-				{/await}
-			{/if}
-		</div>
-	</div>
 
-	{#if !ingeklapt}
-		{#if editable}
-			<div class="gridcol border">
-				<div
-					contenteditable="true"
-					bind:innerHTML={produkt.omschrijving}
-					on:keyup={() => {
-						if (opslaan) clearTimeout(opslaan);
-						opslaan = setTimeout(() => update("omschrijving"), 500);
-					}}
-				/>
-				<div class="small">(omschrijving)</div>
-			</div>
-		{:else}
-			<div class="p2">
-				{@html produkt.omschrijving}
-			</div>
+			{#if editable}
+				<div class="gridcol border">
+					<div
+						contenteditable="true"
+						bind:innerHTML={produkt.omschrijving}
+						on:keyup={() => {
+							if (opslaan) clearTimeout(opslaan);
+							opslaan = setTimeout(
+								() => update("omschrijving"),
+								500
+							);
+						}}
+					/>
+					<div class="small">(omschrijving)</div>
+				</div>
+			{:else}
+				<div class="p2">
+					<div class:cuttext={ingeklapt}>
+						{@html produkt.omschrijving}
+					</div>
+					{#if ingeklapt}
+						<h5>meer...</h5>
+					{/if}
+				</div>
+			{/if}
+		</div>
+
+		{#if afbeelding}
+			{#await afbeelding then afbeelding}
+				<div class="full">
+					<img class="fit" src={afbeelding} />
+				</div>
+			{/await}
 		{/if}
-	{/if}
+	</div>
 
 	{#each produkt.prijzen as prijs}
 		{prijs.prijs} - {prijs.aantal}
@@ -309,7 +312,7 @@
 	.gridcolafbeelding {
 		position: relative;
 		display: grid;
-		grid-template-columns: 4fr 1fr;
+		grid-template-columns: 4fr 2fr;
 	}
 
 	.small {
@@ -334,5 +337,12 @@
 		box-shadow: rgba(18, 120, 197, 0.1) 0px 1px 2px 0px,
 			rgba(60, 64, 67, 0.05) 0px 2px 6px 2px,
 			rgba(204, 39, 39, 0.08) 0px 4px 12px;
+	}
+
+	.cuttext {
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 </style>

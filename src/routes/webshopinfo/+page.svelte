@@ -2,17 +2,15 @@
     <title>VVV cheques, bestellen, klant worden en zo | Fetum</title>
 </svelte:head>
 
-<div class="container p4 h75 grid2r vertcenter">
-    <div>
+<div class="container m2 h50 grid2r">
+    <div class="centergrid">
         <h1 class="groot center">Webshop Info</h1>
         <h2 class="center">Over u en ons. Samen.</h2>
         <h3 class="center">
             Aankopen, VVV cheques, klant worden en wat er allemaal mogelijk is.
         </h3>
     </div>
-    <div>
-        <img class="fit" src="/afbeeldingen/hp188.png" alt="hoofdtelefoon" />
-    </div>
+    <div class="afbeelding" />
 </div>
 
 <div class="container">
@@ -141,7 +139,8 @@
 </div>
 
 <style>
-    h1 {
-        margin: 0;
+    .afbeelding {
+        background: url("afbeeldingen/hp188.png") center center;
+        background-size: cover;
     }
 </style>

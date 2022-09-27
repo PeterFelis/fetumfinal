@@ -140,16 +140,16 @@
 	};
 </script>
 
-<div class="container p4 h75 grid2r vertcenter">
-	<div>
-		<h1 class="groot center">Webshop<br />info</h1>
+<div class="container m2 h50 grid2r">
+	<div class="centergrid">
+		<h1 class="groot center">Webshop</h1>
 		<h2 class="center">Alles op een rij</h2>
 	</div>
-	<div>plaatje</div>
+	<div class="beer" />
 </div>
 
 <div class="container">
-	<div class="p4">
+	<div class="border">
 		editabtle <input type="checkbox" bind:checked={editable} />
 		ingeklapt <input type="checkbox" bind:checked={ingeklapt} />
 	</div>
@@ -315,14 +315,15 @@
 		margin: 0;
 	}
 
-	h2,
-	h4,
-	h5 {
-		margin: 0;
-	}
 	.muis {
 		cursor: pointer;
 	}
+
+	.beer {
+		background: url("afbeeldingen/muisopruguitgeknipt.png") center center;
+		background-size: cover;
+	}
+
 	.allover {
 		display: grid;
 		grid-template-columns: 1fr 3fr;
@@ -330,6 +331,6 @@
 
 	.shop {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: 1fr;
 	}
 </style>

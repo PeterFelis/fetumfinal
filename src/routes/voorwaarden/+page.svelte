@@ -2,23 +2,17 @@
     <title>Leverigsvoorwaarden - hele kleine lettertjes | Fetum</title>
 </svelte:head>
 
-<div class="container p4 h75 grid2r vertcenter">
-    <div>
+<div class="container m2 h50 grid2r">
+    <div class="centergrid">
         <h1 class="center groot">Leverings<br />voorwaarden</h1>
         <h2 class="center">
             De kleine lettertjes.<br /> Kunnen we ook niets aan doen.
         </h2>
     </div>
-    <div>
-        <img
-            class="fit"
-            src="/afbeeldingen/hp188.png"
-            alt="hoofdtelefoon"
-            />
-    </div>
+    <div class="afbeelding" />
 </div>
 
-<div class='container'>
+<div class="container">
     <section class="cols">
         <p>
             Fetum b.v, Grote waard 36, Honselersdijk hierna te noemen: gebruiker
@@ -444,6 +438,10 @@
         column-gap: 1rem;
     }
 
+    .afbeelding {
+        background: url("afbeeldingen/hp188.png") center center;
+        background-size: cover;
+    }
     @media (min-width: 900px) {
         .cols {
             column-count: 3;

@@ -23,11 +23,19 @@ h6 {
     font-family: "Ubuntu";
     color: var(--donkergroen);
     font-weight: 400;
+    margin: 0;
+    padding: 0;
+}
+
+
+h2 {
+    line-height: 1.2;
 }
 
 .groot {
     font-size: 4rem;
-    line-height: 3.6rem;
+    line-height: 3.8rem;
+    margin: 1rem 0 1rem 0;
 }
 
 .heelgroot {
@@ -54,8 +62,16 @@ h6 {
     width: 50%;
 }
 
+.h50 {
+    max-height: 50vh;
+    height: 50vh;
+    min-height: 50vh;
+}
+
 .h75 {
+    max-height: 75vh;
     height: 75vh;
+    min-height: 75vh;
 }
 
 .p1 {
@@ -93,6 +109,19 @@ h6 {
     height: 100vh;
 }
 
+.full {
+    width: 100%;
+    height: 100%;
+}
+
+.fit {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    border: 1px solid red;
+}
+
 .fullwidth {
     width: 100%;
     height: auto;
@@ -101,12 +130,6 @@ h6 {
 .fullheight {
     width: auto;
     height: 100%;
-}
-
-.fit {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
 }
 
 .rel {
@@ -124,7 +147,6 @@ h6 {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
-    height: 100%;
 }
 
 .grid2 {
@@ -138,7 +160,6 @@ h6 {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(2, 1fr);
-    height: 100%;
 }
 
 /* gap */
@@ -147,8 +168,9 @@ h6 {
 }
 
 /* centreren alles in grid */
-.vertcenter {
-    place-items: center;
+.centergrid {
+    align-self: center;
+    justify-self: center;
 }
 
 
@@ -168,3 +190,4 @@ h6 {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: 1fr;
     }
+}
