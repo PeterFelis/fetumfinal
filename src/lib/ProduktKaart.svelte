@@ -3,6 +3,7 @@
 	import { supabase } from "../stores/supabase";
 
 	import { createEventDispatcher } from "svelte";
+	import Logo from "./Logo.svelte";
 	const dispatch = createEventDispatcher();
 
 	export let produkt;
@@ -11,11 +12,15 @@
 	export let ingeklapt = false;
 
 	let opslaan;
-
 	let afbeelding;
-	let pdf;
-
 	let files;
+	let prijzen = produkt.prijzen;
+	let toevoegen = false;
+
+	prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
+	console.log(prijzen);
+
+	if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
 
 	let huidigeType = produkt.type;
 
@@ -133,7 +138,35 @@
 			huidigeType = produkt.type;
 			return;
 		}
-		console.log(wat);
+
+		if (wat == "prijzen") {
+			let prijzen = [];
+			// lege velden eruit filteren
+			for (let i = 0; i < produkt.prijzen.length; i++)
+				if (
+					produkt.prijzen[i].prijs != null &&
+					produkt.prijzen[i].aantal != null &&
+					!isNaN(produkt.prijzen[i].prijs) &&
+					!isNaN(produkt.prijzen[i].aantal)
+				)
+					prijzen.push(produkt.prijzen[i]);
+			console.log("uit de opslag", prijzen);
+
+			//alles omzetten naar int en float
+			for (let i = 0; i < prijzen.length; i++) {
+				prijzen[i].aantal = parseInt(prijzen[i].aantal);
+				prijzen[i].prijs = parseFloat(prijzen[i].prijs);
+			}
+			// sorteren
+			prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
+
+			produkt.prijzen = prijzen;
+			await supabase
+				.from("producten")
+				.update({ prijzen: produkt.prijzen })
+				.eq("id", produkt.id);
+			return;
+		}
 	};
 
 	const onFileSelected = (e) => {
@@ -235,9 +268,17 @@
 						{@html produkt.omschrijving}
 					</div>
 					{#if ingeklapt}
-						<a href='/webshop/{produkt.id}/'>meer...</a>
+						<a href="/webshop/{produkt.id}/">meer...</a>
 					{/if}
 				</div>
+				<!--prijs per stuk tonen bij ingeklapte view door klant-->
+				{#if prijzen.length > 0 && ingeklapt}
+					<div>
+						Prijs vanaf: {parseFloat(
+							prijzen[prijzen.length - 1].prijs
+						).toFixed(2)} per stuk.
+					</div>
+				{/if}
 			{/if}
 		</div>
 
@@ -250,9 +291,58 @@
 		{/if}
 	</div>
 
-	{#each produkt.prijzen as prijs}
-		{prijs.prijs} - {prijs.aantal}
-	{/each}
+	<!--prijsstaffel tonen bij uitgeklapte view en bijwerken bij editable-->
+	{#if !ingeklapt}
+		<div class="p4">
+			<h3>Prijzen</h3>
+			<button
+				on:click={() => {
+					produkt.prijzen = [
+						...produkt.prijzen,
+						{ prijs: "--", aantal: "--" },
+					];
+				}}
+				>toevoegen
+			</button>
+			<div class="grid">
+				<h5>aantal</h5>
+				<h5>prijs per stuk</h5>
+			</div>
+			{#each produkt.prijzen as prijs, i}
+				{#if editable}
+					<div class="grid">
+						<h5
+							contenteditable="true"
+							bind:innerHTML={prijs.aantal}
+							on:blur={() => {
+								if (prijs.prijs != "--") {
+									update("prijzen");
+								}
+							}}
+						/>
+						<h5
+							contenteditable="true"
+							bind:innerHTML={prijs.prijs}
+							on:blur={() => {
+								update("prijzen");
+								if (i == produkt.prijzen.length - 1) {
+									produkt.prijzen = [
+										...produkt.prijzen,
+										{ prijs: "--", aantal: "--" },
+									];
+								}
+							}}
+						/>
+					</div>
+				{:else}
+					<div class="grid">
+						<h5>{parseInt(prijs.aantal)} stuks</h5>
+						<h5>{parseFloat(prijs.prijs).toFixed(2)} per stuk</h5>
+					</div>
+				{/if}
+			{/each}
+		</div>
+	{/if}
 
 	{#if produkt.PDF}
 		<div>
