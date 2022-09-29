@@ -3,7 +3,6 @@
 	import { supabase } from "../stores/supabase";
 
 	import { createEventDispatcher } from "svelte";
-	import Logo from "./Logo.svelte";
 	const dispatch = createEventDispatcher();
 
 	export let produkt;
@@ -12,33 +11,43 @@
 	export let ingeklapt = false;
 
 	let opslaan;
-	let afbeelding;
+	
 	let files;
 	let prijzen = produkt.prijzen;
-	let plaatje;
+	let afbeelding;
 
+
+	if(prijzen){ 
 	prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
-
 	if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
+	}
 
 	let huidigeType = produkt.type;
 
 	const bijwerkenAfbeelding = async () => {
-		let nieuweafbeelding = files[0].name;
-		produkt.afbeeldingen.push(nieuweafbeelding);
-		console.log(files[0]);
-		//	await supabase.storage
-		//		.from("produkten")
-		//		.remove([produkt.id.toString()]);
+		let nieuweafbeelding;
+
 		await supabase.storage
 			.from("produkten")
 			.upload(files[0].name, files[0]);
 
-		let { data, error } = await supabase
+		let URL =  await supabase.storage
+  		.from('produkten')
+  		.getPublicUrl(files[0].name);
+
+		nieuweafbeelding= URL.publicURL;
+
+		if (produkt.afbeeldingen)
+		produkt.afbeeldingen=[...produkt.afbeeldingen,nieuweafbeelding];
+		else
+		produkt.afbeeldingen=[nieuweafbeelding];
+
+
+		let afbeeldingnaardatabase = await supabase
 			.from("producten")
-			.update({ afbeeldingen: produkt.afbeeldingen })
+			.update({afbeeldingen: produkt.afbeeldingen})
 			.eq("id", produkt.id);
-		if (!error)
+		if (! afbeeldingnaardatabase.error)
 			console.log(
 				"bijwerkenAfbeelding-> bijwerken afbeelding in database gelukt"
 			);
@@ -87,13 +96,11 @@
 		const { data, error } = await supabase.storage
 			.from("produkten")
 			.download(afbeelding);
-		if (error) console.log(afbeelding, data, "nee");
-		else return URL.createObjectURL(data);
 	};
 
-	if (produkt.afbeeldingen) {
-		afbeelding = ophalenAfbeelding(produkt.afbeeldingen[0]);
-	}
+	// if (produkt.afbeeldingen) {
+	// 	afbeelding = ophalenAfbeelding(produkt.afbeeldingen[0]);
+	// }
 
 	const update = async (wat) => {
 		if (wat == "model") {
@@ -179,6 +186,43 @@
 			avatar = e.target.result;
 		};
 	};
+
+
+	function dragStart(e) {
+		if (!editable) return;
+		e.dataTransfer.effectAllowed = "move";
+		e.dataTransfer.setData("text/plain", null);
+		selected = e.target;
+	}
+
+	function isBefore(el1, el2) {
+		if (!editable) return;
+		let cur;
+		if (el2.parentNode === el1.parentNode) {
+			for (cur = el1.previousSibling; cur; cur = cur.previousSibling) {
+				if (cur === el2) return true;
+			}
+		}
+		return false;
+	}
+
+	let selected = null;
+	export function dragOver(e) {
+    if (!editable) return;
+    if (isBefore(selected, e.target)) {
+        e.target.parentNode.insertBefore(selected, e.target);
+    } else {
+        e.target.parentNode.insertBefore(selected, e.target.nextSibling);
+    }
+}
+
+
+	function dragend() {
+		if (!editable) return;
+		//if (opslaan) clearTimeout(opslaan);
+		//opslaan = setTimeout(() => aanpassencatVolgnr(), 1000);
+		produkt.afbeeldingen=produkt.afbeeldingen;
+	}
 </script>
 
 <div class="kaart">
@@ -274,7 +318,7 @@
 					{/if}
 				</div>
 				<!--prijs per stuk tonen bij ingeklapte view door klant-->
-				{#if prijzen.length > 0 && ingeklapt}
+				{#if prijzen && ingeklapt}
 					<div>
 						Prijs vanaf: {parseFloat(
 							prijzen[prijzen.length - 1].prijs
@@ -285,14 +329,20 @@
 		</div>
 
 		{#if produkt.afbeeldingen}
+			<ul class='grid'>
 			{#each produkt.afbeeldingen as afbeelding}
-				{#await afbeelding then afbeelding}
-					plaatje=URL.createObjectURL(afbeelding)
-					<div class="full">
-						<img class="fit" src={plaatje} />
-					</div>
-				{/await}
+					<li on:dragstart={dragStart}
+						on:dragleave={dragend}
+						on:dragover={dragOver}
+						draggable={editable}
+					
+						class="full">
+						
+						<img class="fit" 
+						src="{afbeelding}" alt="{produkt.model}"/>
+					</li>
 			{/each}
+			</ul>
 		{/if}
 	</div>
 

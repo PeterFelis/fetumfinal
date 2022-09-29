@@ -2,6 +2,7 @@
 	import Produkt from "$lib/ProduktKaart.svelte";
 	import { supabase } from "../../stores/supabase";
 	import settings from "../../stores/instellingen";
+	
 
 	export let data; // data van de serverside load!!
 
@@ -45,14 +46,14 @@
 	//drag and drop sorteren
 	let selected = null;
 
-	function dragOver(e) {
-		if (!editable) return;
-		if (isBefore(selected, e.target)) {
-			e.target.parentNode.insertBefore(selected, e.target);
-		} else {
-			e.target.parentNode.insertBefore(selected, e.target.nextSibling);
-		}
-	}
+	export function dragOver(e) {
+    if (!editable) return;
+    if (isBefore(selected, e.target)) {
+        e.target.parentNode.insertBefore(selected, e.target);
+    } else {
+        e.target.parentNode.insertBefore(selected, e.target.nextSibling);
+    }
+}
 
 	let opslaan;
 
