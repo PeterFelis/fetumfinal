@@ -15,31 +15,33 @@
 	let afbeelding;
 	let files;
 	let prijzen = produkt.prijzen;
-	let toevoegen = false;
+	let plaatje;
 
 	prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
-	console.log(prijzen);
 
 	if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
 
 	let huidigeType = produkt.type;
 
 	const bijwerkenAfbeelding = async () => {
+		let nieuweafbeelding = files[0].name;
+		produkt.afbeeldingen.push(nieuweafbeelding);
+		console.log(files[0]);
+		//	await supabase.storage
+		//		.from("produkten")
+		//		.remove([produkt.id.toString()]);
 		await supabase.storage
 			.from("produkten")
-			.remove([produkt.id.toString()]);
-		await supabase.storage
-			.from("produkten")
-			.upload(produkt.id.toString(), files[0]);
+			.upload(files[0].name, files[0]);
+
 		let { data, error } = await supabase
 			.from("producten")
-			.update({ afbeeldingen: [produkt.id.toString()] })
+			.update({ afbeeldingen: produkt.afbeeldingen })
 			.eq("id", produkt.id);
 		if (!error)
 			console.log(
 				"bijwerkenAfbeelding-> bijwerken afbeelding in database gelukt"
 			);
-		afbeelding = URL.createObjectURL(files[0]);
 	};
 
 	const wisafbeelding = async () => {
@@ -282,12 +284,15 @@
 			{/if}
 		</div>
 
-		{#if afbeelding}
-			{#await afbeelding then afbeelding}
-				<div class="full">
-					<img class="fit" src={afbeelding} />
-				</div>
-			{/await}
+		{#if produkt.afbeeldingen}
+			{#each produkt.afbeeldingen as afbeelding}
+				{#await afbeelding then afbeelding}
+					plaatje=URL.createObjectURL(afbeelding)
+					<div class="full">
+						<img class="fit" src={plaatje} />
+					</div>
+				{/await}
+			{/each}
 		{/if}
 	</div>
 
