@@ -3,6 +3,8 @@
 	import { supabase } from "../stores/supabase";
 
 	import { createEventDispatcher } from "svelte";
+	import Logo from "./Logo.svelte";
+
 	const dispatch = createEventDispatcher();
 
 	export let produkt;
@@ -11,15 +13,15 @@
 	export let ingeklapt = false;
 
 	let opslaan;
-	
+
 	let files;
 	let prijzen = produkt.prijzen;
 	let afbeelding;
+	let lijst;
 
-
-	if(prijzen){ 
-	prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
-	if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
+	if (prijzen) {
+		prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
+		if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
 	}
 
 	let huidigeType = produkt.type;
@@ -31,23 +33,21 @@
 			.from("produkten")
 			.upload(files[0].name, files[0]);
 
-		let URL =  await supabase.storage
-  		.from('produkten')
-  		.getPublicUrl(files[0].name);
+		let URL = await supabase.storage
+			.from("produkten")
+			.getPublicUrl(files[0].name);
 
-		nieuweafbeelding= URL.publicURL;
+		nieuweafbeelding = URL.publicURL;
 
 		if (produkt.afbeeldingen)
-		produkt.afbeeldingen=[...produkt.afbeeldingen,nieuweafbeelding];
-		else
-		produkt.afbeeldingen=[nieuweafbeelding];
-
+			produkt.afbeeldingen = [...produkt.afbeeldingen, nieuweafbeelding];
+		else produkt.afbeeldingen = [nieuweafbeelding];
 
 		let afbeeldingnaardatabase = await supabase
 			.from("producten")
-			.update({afbeeldingen: produkt.afbeeldingen})
+			.update({ afbeeldingen: produkt.afbeeldingen })
 			.eq("id", produkt.id);
-		if (! afbeeldingnaardatabase.error)
+		if (!afbeeldingnaardatabase.error)
 			console.log(
 				"bijwerkenAfbeelding-> bijwerken afbeelding in database gelukt"
 			);
@@ -92,16 +92,6 @@
 		produkt.PDF = null;
 	};
 
-	const ophalenAfbeelding = async (afbeelding) => {
-		const { data, error } = await supabase.storage
-			.from("produkten")
-			.download(afbeelding);
-	};
-
-	// if (produkt.afbeeldingen) {
-	// 	afbeelding = ophalenAfbeelding(produkt.afbeeldingen[0]);
-	// }
-
 	const update = async (wat) => {
 		if (wat == "model") {
 			await supabase
@@ -132,6 +122,15 @@
 				.eq("id", produkt.id);
 
 			dispatch("categorie", { text: produkt.categorie });
+			return;
+		}
+
+		if (wat == "afbeeldingen") {
+			let afbeeldingnaardatabase = await supabase
+				.from("producten")
+				.update({ afbeeldingen: produkt.afbeeldingen })
+				.eq("id", produkt.id);
+			console.log(afbeeldingnaardatabase);
 			return;
 		}
 
@@ -187,12 +186,13 @@
 		};
 	};
 
-
 	function dragStart(e) {
 		if (!editable) return;
+		if (e.target == "img") return;
+		//console.log(e.target.closest("li"));
 		e.dataTransfer.effectAllowed = "move";
 		e.dataTransfer.setData("text/plain", null);
-		selected = e.target;
+		selected = e.target.closest("li");
 	}
 
 	function isBefore(el1, el2) {
@@ -207,26 +207,36 @@
 	}
 
 	let selected = null;
-	export function dragOver(e) {
-    if (!editable) return;
-    if (isBefore(selected, e.target)) {
-        e.target.parentNode.insertBefore(selected, e.target);
-    } else {
-        e.target.parentNode.insertBefore(selected, e.target.nextSibling);
-    }
-}
-
-
-	function dragend() {
+	function dragOver(e) {
 		if (!editable) return;
-		//if (opslaan) clearTimeout(opslaan);
-		//opslaan = setTimeout(() => aanpassencatVolgnr(), 1000);
-		produkt.afbeeldingen=produkt.afbeeldingen;
+		let target = e.target.nextSibling;
+		if (target.nodeName == "#text") return;
+		if (isBefore(selected, e.target)) {
+			e.target.parentNode.insertBefore(selected, e.target);
+		} else {
+			e.target.parentNode.insertBefore(selected, target);
+		}
+	}
+
+	function dragend(e) {
+		if (!editable) return;
+		if (e.target == "li") return;
+
+		let plaatjes = [];
+		for (let teller = 0; teller < lijst.childElementCount; teller++) {
+			if (lijst.children[teller].querySelector("img") != null)
+				plaatjes.push(lijst.children[teller].querySelector("img").src);
+
+			produkt.afbeeldingen = plaatjes;
+			console.log(produkt.plaatjes);
+			if (opslaan) clearTimeout(opslaan);
+			opslaan = setTimeout(() => update("afbeeldingen"), 2000);
+		}
 	}
 </script>
 
 <div class="kaart">
-	<div class="gridcolafbeelding g1">
+	<div class="grid1 g1">
 		<div>
 			{#if editable}
 				<div class="gridcol">
@@ -327,21 +337,25 @@
 				{/if}
 			{/if}
 		</div>
-
+	</div>
+	<div>
 		{#if produkt.afbeeldingen}
-			<ul class='grid'>
-			{#each produkt.afbeeldingen as afbeelding}
-					<li on:dragstart={dragStart}
+			<ul class="grid" bind:this={lijst}>
+				{#each produkt.afbeeldingen as afbeelding}
+					<li
+						on:dragstart={dragStart}
 						on:dragleave={dragend}
 						on:dragover={dragOver}
 						draggable={editable}
-					
-						class="full">
-						
-						<img class="fit" 
-						src="{afbeelding}" alt="{produkt.model}"/>
+						class="full"
+					>
+						<img
+							class="fiti"
+							src={afbeelding}
+							alt={produkt.model}
+						/>
 					</li>
-			{/each}
+				{/each}
 			</ul>
 		{/if}
 	</div>
@@ -363,39 +377,44 @@
 				<h5>aantal</h5>
 				<h5>prijs per stuk</h5>
 			</div>
-			{#each produkt.prijzen as prijs, i}
-				{#if editable}
-					<div class="grid">
-						<h5
-							contenteditable="true"
-							bind:innerHTML={prijs.aantal}
-							on:blur={() => {
-								if (prijs.prijs != "--") {
+
+			{#if produkt.prijzen}
+				{#each produkt.prijzen as prijs, i}
+					{#if editable}
+						<div class="grid">
+							<h5
+								contenteditable="true"
+								bind:innerHTML={prijs.aantal}
+								on:blur={() => {
+									if (prijs.prijs != "--") {
+										update("prijzen");
+									}
+								}}
+							/>
+							<h5
+								contenteditable="true"
+								bind:innerHTML={prijs.prijs}
+								on:blur={() => {
 									update("prijzen");
-								}
-							}}
-						/>
-						<h5
-							contenteditable="true"
-							bind:innerHTML={prijs.prijs}
-							on:blur={() => {
-								update("prijzen");
-								if (i == produkt.prijzen.length - 1) {
-									produkt.prijzen = [
-										...produkt.prijzen,
-										{ prijs: "--", aantal: "--" },
-									];
-								}
-							}}
-						/>
-					</div>
-				{:else}
-					<div class="grid">
-						<h5>{parseInt(prijs.aantal)} stuks</h5>
-						<h5>{parseFloat(prijs.prijs).toFixed(2)} per stuk</h5>
-					</div>
-				{/if}
-			{/each}
+									if (i == produkt.prijzen.length - 1) {
+										produkt.prijzen = [
+											...produkt.prijzen,
+											{ prijs: "--", aantal: "--" },
+										];
+									}
+								}}
+							/>
+						</div>
+					{:else}
+						<div class="grid">
+							<h5>{parseInt(prijs.aantal)} stuks</h5>
+							<h5>
+								{parseFloat(prijs.prijs).toFixed(2)} per stuk
+							</h5>
+						</div>
+					{/if}
+				{/each}
+			{/if}
 		</div>
 	{/if}
 
@@ -444,6 +463,21 @@
 </div>
 
 <style>
+	ul {
+		margin: 0;
+		padding: 0;
+	}
+
+	li {
+		list-style: none;
+		border: 1px solid red;
+	}
+
+	.fiti {
+		width: 100px;
+		height: auto;
+	}
+
 	h2,
 	h3 {
 		margin: 0;
@@ -452,12 +486,6 @@
 
 	.gridcol {
 		position: relative;
-	}
-
-	.gridcolafbeelding {
-		position: relative;
-		display: grid;
-		grid-template-columns: 4fr 2fr;
 	}
 
 	.small {
