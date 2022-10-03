@@ -19,6 +19,9 @@
 	let afbeelding;
 	let lijst;
 
+	let keuze,keuzeE=null;
+	let doel,doelE=null;
+
 	if (prijzen) {
 		prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
 		if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
@@ -186,53 +189,37 @@
 		};
 	};
 
-	function dragStart(e) {
-		if (!editable) return;
-		if (e.target == "img") return;
-		//console.log(e.target.closest("li"));
-		e.dataTransfer.effectAllowed = "move";
-		e.dataTransfer.setData("text/plain", null);
-		selected = e.target.closest("li");
-	}
+	
 
-	function isBefore(el1, el2) {
-		if (!editable) return;
-		let cur;
-		if (el2.parentNode === el1.parentNode) {
-			for (cur = el1.previousSibling; cur; cur = cur.previousSibling) {
-				if (cur === el2) return true;
-			}
-		}
-		return false;
-	}
-
-	let selected = null;
-	function dragOver(e) {
-		if (!editable) return;
-		let target = e.target.nextSibling;
-		if (target.nodeName == "#text") return;
-		if (isBefore(selected, e.target)) {
-			e.target.parentNode.insertBefore(selected, e.target);
-		} else {
-			e.target.parentNode.insertBefore(selected, target);
-		}
+	function dragStart(e){
+		if (e.target=='li') keuzeE=e.target.querySelector('img'); else keuzeE=e.target;
+		keuze= keuzeE.getAttribute('src');
 	}
 
 	function dragend(e) {
-		if (!editable) return;
-		if (e.target == "li") return;
-
-		let plaatjes = [];
+		if (doelE==null) return;
+		if (keuze==null) return;
+		doel = doelE.getAttribute('src');
+		doelE.setAttribute('src',keuze);
+		keuzeE.setAttribute('src',doel);
+			let plaatjes = [];
 		for (let teller = 0; teller < lijst.childElementCount; teller++) {
 			if (lijst.children[teller].querySelector("img") != null)
 				plaatjes.push(lijst.children[teller].querySelector("img").src);
-
+		}
 			produkt.afbeeldingen = plaatjes;
-			console.log(produkt.plaatjes);
+			
 			if (opslaan) clearTimeout(opslaan);
 			opslaan = setTimeout(() => update("afbeeldingen"), 2000);
 		}
-	}
+
+
+	 function dragover(e) {
+		doelE = null;
+		if (e.target.nodeName=="IMG") doelE=  e.target;
+		if (e.target.nodeName=="LI") doelE = e.target.querySelector('img');
+	 }
+
 </script>
 
 <div class="kaart">
@@ -306,7 +293,7 @@
 			{#if editable}
 				<div class="gridcol border">
 					<div
-						contenteditable="true"
+						contenteditable
 						bind:innerHTML={produkt.omschrijving}
 						on:keyup={() => {
 							if (opslaan) clearTimeout(opslaan);
@@ -343,9 +330,9 @@
 			<ul class="grid" bind:this={lijst}>
 				{#each produkt.afbeeldingen as afbeelding}
 					<li
-						on:dragstart={dragStart}
-						on:dragleave={dragend}
-						on:dragover={dragOver}
+						on:dragstart={(e)=>{if (editable) dragStart(e)}}
+					    on:dragend={dragend}
+						on:dragover={(e)=>{if (editable) dragover(e)}}
 						draggable={editable}
 						class="full"
 					>
