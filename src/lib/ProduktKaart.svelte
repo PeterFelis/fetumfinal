@@ -8,9 +8,12 @@
 	const dispatch = createEventDispatcher();
 
 	export let produkt;
+	export let vorm = "overzicht";
 
 	export let editable = false;
 	export let ingeklapt = false;
+	//geeft status of het in het overzicht zit of alleen als stuk zichtbaar
+	export let os = false;
 
 	let opslaan;
 
@@ -19,8 +22,10 @@
 	let afbeelding;
 	let lijst;
 
-	let keuze,keuzeE=null;
-	let doel,doelE=null;
+	let keuze,
+		keuzeE = null;
+	let doel,
+		doelE = null;
 
 	if (prijzen) {
 		prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
@@ -189,44 +194,55 @@
 		};
 	};
 
-	
-
-	function dragStart(e){
-		if (e.target=='li') keuzeE=e.target.querySelector('img'); else keuzeE=e.target;
-		keuze= keuzeE.getAttribute('src');
+	function dragStart(e) {
+		if (e.target == "li") keuzeE = e.target.querySelector("img");
+		else keuzeE = e.target;
+		keuze = keuzeE.getAttribute("src");
 	}
 
 	function dragend(e) {
-		if (doelE==null) return;
-		if (keuze==null) return;
-		doel = doelE.getAttribute('src');
-		doelE.setAttribute('src',keuze);
-		keuzeE.setAttribute('src',doel);
-			let plaatjes = [];
+		if (doelE == null) return;
+		if (keuze == null) return;
+		doel = doelE.getAttribute("src");
+		doelE.setAttribute("src", keuze);
+		keuzeE.setAttribute("src", doel);
+		let plaatjes = [];
 		for (let teller = 0; teller < lijst.childElementCount; teller++) {
 			if (lijst.children[teller].querySelector("img") != null)
 				plaatjes.push(lijst.children[teller].querySelector("img").src);
 		}
-			produkt.afbeeldingen = plaatjes;
-			
-			if (opslaan) clearTimeout(opslaan);
-			opslaan = setTimeout(() => update("afbeeldingen"), 2000);
-		}
+		produkt.afbeeldingen = plaatjes;
 
+		if (opslaan) clearTimeout(opslaan);
+		opslaan = setTimeout(() => update("afbeeldingen"), 2000);
+	}
 
-	 function dragover(e) {
+	function dragover(e) {
 		doelE = null;
-		if (e.target.nodeName=="IMG") doelE=  e.target;
-		if (e.target.nodeName=="LI") doelE = e.target.querySelector('img');
-	 }
-
+		if (e.target.nodeName == "IMG") doelE = e.target;
+		if (e.target.nodeName == "LI") doelE = e.target.querySelector("img");
+	}
 </script>
 
 <div class="kaart">
-	<div class="grid1 g1">
+	<div class="{vorm == 'overzicht' ? 'gridoverzicht' : 'grid1'} g1">
+		{#if vorm == "overzicht"}
+			<div class="">
+				{#if produkt.afbeeldingen}
+					<img
+						class="fit"
+						src={produkt.afbeeldingen[0]}
+						alt={produkt.model}
+					/>
+				{/if}
+			</div>
+		{/if}
 		<div>
 			{#if editable}
 				<div class="gridcol">
+					{#if vorm == "overzicht"}
+						-- overzicht --
+					{/if}
 					<h2
 						contenteditable="true"
 						bind:innerHTML={produkt.model}
@@ -330,9 +346,13 @@
 			<ul class="grid" bind:this={lijst}>
 				{#each produkt.afbeeldingen as afbeelding}
 					<li
-						on:dragstart={(e)=>{if (editable) dragStart(e)}}
-					    on:dragend={dragend}
-						on:dragover={(e)=>{if (editable) dragover(e)}}
+						on:dragstart={(e) => {
+							if (editable) dragStart(e);
+						}}
+						on:dragend={dragend}
+						on:dragover={(e) => {
+							if (editable) dragover(e);
+						}}
 						draggable={editable}
 						class="full"
 					>
@@ -473,6 +493,11 @@
 
 	.gridcol {
 		position: relative;
+	}
+
+	.gridoverzicht {
+		display: grid;
+		grid-template-columns: 1fr 3fr;
 	}
 
 	.small {
