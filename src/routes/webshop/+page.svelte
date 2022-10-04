@@ -2,7 +2,6 @@
 	import Produkt from "$lib/ProduktKaart.svelte";
 	import { supabase } from "../../stores/supabase";
 	import settings from "../../stores/instellingen";
-	
 
 	export let data; // data van de serverside load!!
 
@@ -28,7 +27,6 @@
 	let geselecteerdecategorie = $settings.geselecteerdecategorie;
 
 	let editable = false;
-	let ingeklapt = true;
 
 	const categorieKeuze = () => {
 		let hulp = [];
@@ -47,13 +45,13 @@
 	let selected = null;
 
 	export function dragOver(e) {
-    if (!editable) return;
-    if (isBefore(selected, e.target)) {
-        e.target.parentNode.insertBefore(selected, e.target);
-    } else {
-        e.target.parentNode.insertBefore(selected, e.target.nextSibling);
-    }
-}
+		if (!editable) return;
+		if (isBefore(selected, e.target)) {
+			e.target.parentNode.insertBefore(selected, e.target);
+		} else {
+			e.target.parentNode.insertBefore(selected, e.target.nextSibling);
+		}
+	}
 
 	let opslaan;
 
@@ -152,7 +150,6 @@
 <div class="container">
 	<div class="border">
 		editabtle <input type="checkbox" bind:checked={editable} />
-		ingeklapt <input type="checkbox" bind:checked={ingeklapt} />
 	</div>
 
 	<div class="allover">
@@ -243,7 +240,6 @@
 									<Produkt
 										{produkt}
 										{editable}
-										{ingeklapt}
 										on:categorie={(e) => {
 											cats[
 												cats.indexOf(
@@ -270,7 +266,6 @@
 									<Produkt
 										{produkt}
 										{editable}
-										{ingeklapt}
 										on:categorie={(e) => {
 											cats[
 												cats.indexOf(

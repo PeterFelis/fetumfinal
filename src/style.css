@@ -14,6 +14,22 @@ body {
     overflow-x: hidden;
 }
 
+
+
+.groen {
+    color: var(--groen);
+}
+
+.rood {
+    color: var(--rood);
+}
+
+.paard {
+    color: var(--paars);
+}
+
+
+
 h1,
 h2,
 h3,
@@ -27,9 +43,31 @@ h6 {
     padding: 0;
 }
 
-
 h2 {
     line-height: 1.2;
+}
+
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: "Ubuntu";
+    color: var(--donkergroen);
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+
+}
+
+.h2 {
+    line-height: 1.2;
+    font-size: 35px;
+}
+
+.h5 {
+    font-size: 22.5px;
 }
 
 .groot {
@@ -198,6 +236,10 @@ button {
     border: none;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
 
 @media (min-width: 991px) {
     .grid2r {

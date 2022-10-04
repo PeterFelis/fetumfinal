@@ -3,7 +3,7 @@
 	import { supabase } from "../stores/supabase";
 
 	import { createEventDispatcher } from "svelte";
-	import Logo from "./Logo.svelte";
+	import { goto } from "$app/navigation";
 
 	const dispatch = createEventDispatcher();
 
@@ -11,7 +11,7 @@
 	export let vorm = "overzicht";
 
 	export let editable = false;
-	export let ingeklapt = false;
+
 	//geeft status of het in het overzicht zit of alleen als stuk zichtbaar
 	export let os = false;
 
@@ -19,7 +19,6 @@
 
 	let files;
 	let prijzen = produkt.prijzen;
-	let afbeelding;
 	let lijst;
 
 	let keuze,
@@ -59,19 +58,6 @@
 			console.log(
 				"bijwerkenAfbeelding-> bijwerken afbeelding in database gelukt"
 			);
-	};
-
-	const wisafbeelding = async () => {
-		await supabase.storage
-			.from("produkten")
-			.remove([produkt.id.toString()]);
-		let res = await supabase
-			.from("producten")
-			.update({ afbeeldingen: null })
-			.eq("id", produkt.id);
-		if (!res.error)
-			console.log("afbeelding verwijderd en uit database gehaald");
-		afbeelding = null;
 	};
 
 	const bijwerkenpdf = async () => {
@@ -224,7 +210,12 @@
 	}
 </script>
 
-<div class="kaart">
+<div
+	class="kaart"
+	on:click={() => {
+		if (!editable) goto("/webshop/" + produkt.id);
+	}}
+>
 	<div class="{vorm == 'overzicht' ? 'gridoverzicht' : 'grid1'} g1">
 		{#if vorm == "overzicht"}
 			<div class="">
@@ -240,12 +231,11 @@
 		<div>
 			{#if editable}
 				<div class="gridcol">
-					{#if vorm == "overzicht"}
-						-- overzicht --
-					{/if}
-					<h2
-						contenteditable="true"
-						bind:innerHTML={produkt.model}
+					<input
+						class="h2"
+						type="text"
+						maxlength="26"
+						bind:value={produkt.model}
 						on:keyup={() => {
 							if (opslaan) clearTimeout(opslaan);
 							opslaan = setTimeout(() => update("model"), 500);
@@ -261,9 +251,11 @@
 
 			{#if editable}
 				<div class="gridcol">
-					<h5
-						contenteditable="true"
-						bind:innerHTML={produkt.headline}
+					<input
+						class="h5"
+						type="text"
+						maxlength="43"
+						bind:value={produkt.headline}
 						on:keyup={() => {
 							if (opslaan) clearTimeout(opslaan);
 							opslaan = setTimeout(() => update("headline"), 500);
@@ -277,9 +269,11 @@
 
 			{#if editable}
 				<div class="gridcol">
-					<h3
-						contenteditable="true"
-						bind:innerHTML={produkt.categorie}
+					<input
+						class="h5"
+						type="text"
+						maxlength="25"
+						bind:value={produkt.categorie}
 						on:keyup={() => {
 							if (opslaan) clearTimeout(opslaan);
 							opslaan = setTimeout(
@@ -294,9 +288,11 @@
 
 			{#if editable}
 				<div class="gridcol">
-					<h3
-						contenteditable="true"
-						bind:innerHTML={produkt.type}
+					<input
+						class="h5"
+						type="text"
+						maxlength="25"
+						bind:value={produkt.type}
 						on:keyup={() => {
 							if (opslaan) clearTimeout(opslaan);
 							opslaan = setTimeout(() => update("type"), 500);
@@ -322,148 +318,168 @@
 					<div class="small">(omschrijving)</div>
 				</div>
 			{:else}
-				<div class="p2">
-					<div class:cuttext={ingeklapt}>
+				<div class="">
+					<div class:cuttext={vorm == "overzicht"}>
 						{@html produkt.omschrijving}
 					</div>
-					{#if ingeklapt}
-						<a href="/webshop/{produkt.id}/">meer...</a>
-					{/if}
 				</div>
-				<!--prijs per stuk tonen bij ingeklapte view door klant-->
-				{#if prijzen && ingeklapt}
-					<div>
+			{/if}
+			{#if vorm == "overzicht"}
+				{#if !editable}
+					<div class="rood font-bold">
+						<a href="/webshop/{produkt.id}/">meer ></a>
+					</div>
+				{/if}
+				{#if prijzen}
+					<div class="p1">
 						Prijs vanaf: {parseFloat(
 							prijzen[prijzen.length - 1].prijs
 						).toFixed(2)} per stuk.
 					</div>
 				{/if}
 			{/if}
+
+			{#if produkt.PDF}
+				<div class="groen">
+					<a href={produkt.PDF} target="_blank"
+						>Download PDF voor meer info</a
+					>
+				</div>
+			{/if}
 		</div>
 	</div>
 	<div>
-		{#if produkt.afbeeldingen}
-			<ul class="grid" bind:this={lijst}>
-				{#each produkt.afbeeldingen as afbeelding}
-					<li
-						on:dragstart={(e) => {
-							if (editable) dragStart(e);
-						}}
-						on:dragend={dragend}
-						on:dragover={(e) => {
-							if (editable) dragover(e);
-						}}
-						draggable={editable}
-						class="full"
-					>
-						<img
-							class="fiti"
-							src={afbeelding}
-							alt={produkt.model}
-						/>
-					</li>
-				{/each}
-			</ul>
-		{/if}
-	</div>
-
-	<!--prijsstaffel tonen bij uitgeklapte view en bijwerken bij editable-->
-	{#if !ingeklapt}
-		<div class="p4">
-			<h3>Prijzen</h3>
-			<button
-				on:click={() => {
-					produkt.prijzen = [
-						...produkt.prijzen,
-						{ prijs: "--", aantal: "--" },
-					];
-				}}
-				>toevoegen
-			</button>
-			<div class="grid">
-				<h5>aantal</h5>
-				<h5>prijs per stuk</h5>
-			</div>
-
-			{#if produkt.prijzen}
-				{#each produkt.prijzen as prijs, i}
-					{#if editable}
-						<div class="grid">
-							<h5
-								contenteditable="true"
-								bind:innerHTML={prijs.aantal}
-								on:blur={() => {
-									if (prijs.prijs != "--") {
-										update("prijzen");
-									}
-								}}
-							/>
-							<h5
-								contenteditable="true"
-								bind:innerHTML={prijs.prijs}
-								on:blur={() => {
-									update("prijzen");
-									if (i == produkt.prijzen.length - 1) {
-										produkt.prijzen = [
-											...produkt.prijzen,
-											{ prijs: "--", aantal: "--" },
-										];
-									}
-								}}
-							/>
-						</div>
-					{:else}
-						<div class="grid">
-							<h5>{parseInt(prijs.aantal)} stuks</h5>
-							<h5>
-								{parseFloat(prijs.prijs).toFixed(2)} per stuk
-							</h5>
-						</div>
-					{/if}
-				{/each}
-			{/if}
-		</div>
-	{/if}
-
-	{#if produkt.PDF}
-		<div>
-			<a href={produkt.PDF} target="_blank">Download PDF voor meer info</a
-			>
-		</div>
-	{/if}
-
-	<div class="grid">
 		{#if editable}
-			{#if produkt.PDF}
-				<button on:click={() => wispdf()}>pdf verwijderen</button>
-			{/if}
-
-			{#if produkt.afbeeldingen}
-				<button on:click={() => wisafbeelding()}
-					>afbeelding verwijderen</button
-				>
-			{/if}
-			<div>
-				image
-				<input
-					type="file"
-					bind:files
-					on:change={() => {
-						bijwerkenAfbeelding();
-					}}
-					accept="image/*"
-				/>
+			<div class="gridautorow">
+				{#if produkt.afbeeldingen}
+					<ul class="grid" bind:this={lijst}>
+						{#each produkt.afbeeldingen as afbeelding, i}
+							<li
+								on:dragstart={(e) => {
+									if (editable) dragStart(e);
+								}}
+								on:dragend={dragend}
+								on:dragover={(e) => {
+									if (editable) dragover(e);
+								}}
+								on:dblclick={() => {
+									console.log(i);
+									produkt.afbeeldingen.splice(i, 1);
+									produkt.afbeeldingen = produkt.afbeeldingen;
+									update("afbeeldingen");
+								}}
+								draggable={editable}
+								class="full"
+							>
+								<img
+									class="fit"
+									src={afbeelding}
+									alt={produkt.model}
+								/>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</div>
-			<div>
-				pfd
-				<input
-					type="file"
-					bind:files
-					on:change={() => {
-						bijwerkenpdf();
-					}}
-					accept="application/pdf"
-				/>
+
+			<div class="grid">
+				<div>
+					Afbeelding
+					<input
+						onclick="this.value=''"
+						name="image_uploads"
+						type="file"
+						bind:files
+						on:change={(e) => {
+							bijwerkenAfbeelding();
+						}}
+						accept="image/*"
+					/>
+				</div>
+				<div>
+					PDF
+					<input
+						onclick="this.value=''"
+						type="file"
+						bind:files
+						on:change={(e) => {
+							bijwerkenpdf();
+						}}
+						accept="application/pdf"
+					/>
+					{#if produkt.PDF}
+						<button on:click={() => wispdf()}
+							>pdf verwijderen</button
+						>
+					{/if}
+				</div>
+			</div>
+
+			<!--prijsstaffel tonen bij uitgeklapte view en bijwerken bij editable-->
+			<div class:cuttext={vorm != "overzicht"}>
+				<div class="p4">
+					<h3>Prijzen</h3>
+					{#if editable}
+						<button
+							on:click={() => {
+								produkt.prijzen = [
+									...produkt.prijzen,
+									{ prijs: "--", aantal: "--" },
+								];
+							}}
+							>toevoegen
+						</button>
+					{/if}
+					<div class="grid">
+						<h5>aantal</h5>
+						<h5>prijs per stuk</h5>
+					</div>
+
+					{#if produkt.prijzen}
+						{#each produkt.prijzen as prijs, i}
+							{#if editable}
+								<div class="grid">
+									<h5
+										contenteditable="true"
+										bind:innerHTML={prijs.aantal}
+										on:blur={() => {
+											if (prijs.prijs != "--") {
+												update("prijzen");
+											}
+										}}
+									/>
+									<h5
+										contenteditable="true"
+										bind:innerHTML={prijs.prijs}
+										on:blur={() => {
+											update("prijzen");
+											if (
+												i ==
+												produkt.prijzen.length - 1
+											) {
+												produkt.prijzen = [
+													...produkt.prijzen,
+													{
+														prijs: "--",
+														aantal: "--",
+													},
+												];
+											}
+										}}
+									/>
+								</div>
+							{:else}
+								<div class="grid">
+									<h5>{parseInt(prijs.aantal)} stuks</h5>
+									<h5>
+										{parseFloat(prijs.prijs).toFixed(2)} per
+										stuk
+									</h5>
+								</div>
+							{/if}
+						{/each}
+					{/if}
+				</div>
 			</div>
 		{/if}
 	</div>
@@ -477,18 +493,6 @@
 
 	li {
 		list-style: none;
-		border: 1px solid red;
-	}
-
-	.fiti {
-		width: 100px;
-		height: auto;
-	}
-
-	h2,
-	h3 {
-		margin: 0;
-		padding: 0;
 	}
 
 	.gridcol {
@@ -502,8 +506,8 @@
 
 	.small {
 		font-size: 0.8rem;
-		top: -0.5rem;
-		left: -3rem;
+		top: -1rem;
+		right: -2rem;
 		position: absolute;
 		color: var(--paars);
 	}
@@ -515,13 +519,6 @@
 		margin: 1em 0 1em 0;
 		border-radius: 8px;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.068);
-	}
-
-	.kaart:hover {
-		border-bottom: 1px solid transparent;
-		box-shadow: rgba(18, 120, 197, 0.1) 0px 1px 2px 0px,
-			rgba(60, 64, 67, 0.05) 0px 2px 6px 2px,
-			rgba(204, 39, 39, 0.08) 0px 4px 12px;
 	}
 
 	.cuttext {
