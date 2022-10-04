@@ -26,6 +26,8 @@
 	let doel,
 		doelE = null;
 
+	let hulp=false;
+
 	if (prijzen) {
 		prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
 		if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
@@ -144,14 +146,13 @@
 		if (wat == "prijzen") {
 			let prijzen = [];
 			// lege velden eruit filteren
-			for (let i = 0; i < produkt.prijzen.length; i++)
-				if (
-					produkt.prijzen[i].prijs != null &&
-					produkt.prijzen[i].aantal != null &&
-					!isNaN(produkt.prijzen[i].prijs) &&
-					!isNaN(produkt.prijzen[i].aantal)
-				)
-					prijzen.push(produkt.prijzen[i]);
+			for (let i = 0; i < produkt.prijzen.length; i++){
+				if ((!isNaN(produkt.prijzen[i].prijs) ||
+					!isNaN(produkt.prijzen[i].aantal)) &&
+					(produkt.prijzen[i].prijs!=null ||
+					produkt.prijzen[i].aantal!=null)  
+					) prijzen.push(produkt.prijzen[i]);
+			}
 			console.log("uit de opslag", prijzen);
 
 			//alles omzetten naar int en float
@@ -216,7 +217,8 @@
 		if (!editable) goto("/webshop/" + produkt.id);
 	}}
 >
-	<div class="{vorm == 'overzicht' ? 'gridoverzicht' : 'grid1'} g1">
+	<!-- plaatje een links laten zien bij algemeen overzicht -->
+	<div class="{vorm == 'overzicht' ? 'gridoverzicht' : 'grid2'} g1">
 		{#if vorm == "overzicht"}
 			<div class="">
 				{#if produkt.afbeeldingen}
@@ -228,6 +230,8 @@
 				{/if}
 			</div>
 		{/if}
+
+
 		<div>
 			{#if editable}
 				<div class="gridcol">
@@ -346,9 +350,46 @@
 					>
 				</div>
 			{/if}
+			
+			
+			{#if (vorm != 'overzicht' && produkt.prijzen)}
+			<div class='grid2 p2'>
+				<div>Aantal</div><div>Prijs</div>
+			{#each produkt.prijzen as {aantal,prijs}}
+				<div>{aantal}</div> <div> {prijs.toFixed(2)}</div>
+			{/each}
+			</div>
+			{/if}
+	
 		</div>
+		<!--plaatjes rechts bij overzicht-->
+
+				 
+		{#if vorm != 'overzicht'}
+		<div class="gridautorow">
+			{#if produkt.afbeeldingen}
+				<ul>
+					{#each produkt.afbeeldingen as afbeelding, i}
+						<li class="full" >
+							<img
+								class="fit"
+								src={afbeelding}
+								alt={produkt.model}
+							/>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</div>
+		{/if}
+
+
+
+
+
 	</div>
 	<div>
+		<!-- plaatjes tonen bij editable om te kunnen -->
 		{#if editable}
 			<div class="gridautorow">
 				{#if produkt.afbeeldingen}
@@ -419,17 +460,6 @@
 			<div class:cuttext={vorm != "overzicht"}>
 				<div class="p4">
 					<h3>Prijzen</h3>
-					{#if editable}
-						<button
-							on:click={() => {
-								produkt.prijzen = [
-									...produkt.prijzen,
-									{ prijs: "--", aantal: "--" },
-								];
-							}}
-							>toevoegen
-						</button>
-					{/if}
 					<div class="grid">
 						<h5>aantal</h5>
 						<h5>prijs per stuk</h5>
@@ -439,33 +469,26 @@
 						{#each produkt.prijzen as prijs, i}
 							{#if editable}
 								<div class="grid">
-									<h5
+									<input type="number"
 										contenteditable="true"
-										bind:innerHTML={prijs.aantal}
-										on:blur={() => {
-											if (prijs.prijs != "--") {
+										bind:value={prijs.aantal}
+										on:keydown={(e) => {
+											if (e.key=='Tab')
 												update("prijzen");
-											}
-										}}
+											}}
 									/>
-									<h5
+									<input type="number"
 										contenteditable="true"
-										bind:innerHTML={prijs.prijs}
-										on:blur={() => {
-											update("prijzen");
-											if (
-												i ==
-												produkt.prijzen.length - 1
-											) {
-												produkt.prijzen = [
-													...produkt.prijzen,
-													{
-														prijs: "--",
-														aantal: "--",
-													},
-												];
-											}
-										}}
+										bind:value={prijs.prijs}
+										on:keydown={(e)=>{
+											if (e.key=='Tab'){
+												update("prijzen")
+												produkt.prijzen = [...produkt.prijzen,
+													{prijs: null,aantal: null}];
+										
+										}}}
+
+										
 									/>
 								</div>
 							{:else}

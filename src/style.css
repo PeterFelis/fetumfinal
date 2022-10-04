@@ -196,7 +196,7 @@ h2 {
 .grid2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    height: 100%;
+    hweight:100%
 }
 
 /* 2 colum grid, bij klein boven, bij groot naast elkaar */
