@@ -12,13 +12,11 @@
 
 	export let editable = false;
 
-	//geeft status of het in het overzicht zit of alleen als stuk zichtbaar
-	export let os = false;
-
 	let opslaan;
 
 	let files;
 	let prijzen = produkt.prijzen;
+
 	let lijst;
 
 	let keuze,
@@ -26,14 +24,42 @@
 	let doel,
 		doelE = null;
 
-	let hulp=false;
-
 	if (prijzen) {
 		prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
 		if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
 	}
 
 	let huidigeType = produkt.type;
+
+	function omzetten(text) {
+		// als leeg
+		if (text == null) return (text = "");
+		//splitsen op de divs
+		let lijst = text.split("<div>");
+		//</divs verwijderen
+		for (let i = 0; i < lijst.length; i++)
+			if (lijst[i].includes("</div>")) {
+				let pos = lijst[i].indexOf("</div");
+				lijst[i] = lijst[i].substr(0, pos);
+			}
+
+		text = "";
+		for (const lijn of lijst) {
+			if (lijn[0] == "-") text += "<h4>" + lijn.substring(1) + "</h4>";
+			else {
+				let keyval = lijn.split(",");
+				console.log(keyval);
+				text += "<div class='grid'><div>" + keyval[0];
+				if (keyval.length > 1) text += "</div><div>" + keyval[1];
+
+				text += "</div></div>";
+			}
+		}
+
+		return text;
+	}
+
+	let aanvullendetext = omzetten(produkt.aanvullen);
 
 	const bijwerkenAfbeelding = async () => {
 		let nieuweafbeelding;
@@ -111,6 +137,14 @@
 			return;
 		}
 
+		if (wat == "aanvullen") {
+			await supabase
+				.from("producten")
+				.update({ aanvullen: produkt.aanvullen })
+				.eq("id", produkt.id);
+			return;
+		}
+
 		if (wat == "categorie") {
 			await supabase
 				.from("producten")
@@ -145,15 +179,27 @@
 
 		if (wat == "prijzen") {
 			let prijzen = [];
-			// lege velden eruit filteren
-			for (let i = 0; i < produkt.prijzen.length; i++){
-				if ((!isNaN(produkt.prijzen[i].prijs) ||
-					!isNaN(produkt.prijzen[i].aantal)) &&
-					(produkt.prijzen[i].prijs!=null ||
-					produkt.prijzen[i].aantal!=null)  
-					) prijzen.push(produkt.prijzen[i]);
+			// kijken of een van de pos is leeg -> dan in bewerking
+			for (let i = 0; i < produkt.prijzen.length; i++) {
+				if (
+					produkt.prijzen[i].aantal == null &&
+					produkt.prijzen[i].prijs != null
+				)
+					return;
+				if (
+					produkt.prijzen[i].aantal != null &&
+					produkt.prijzen[i].prijs == null
+				)
+					return;
 			}
-			console.log("uit de opslag", prijzen);
+			// beide regels leeg -> verwijderen
+			for (let i = 0; i < produkt.prijzen.length; i++) {
+				if (
+					produkt.prijzen[i].aantal != null &&
+					produkt.prijzen[i].prijs != null
+				)
+					prijzen.push(produkt.prijzen[i]);
+			}
 
 			//alles omzetten naar int en float
 			for (let i = 0; i < prijzen.length; i++) {
@@ -230,7 +276,6 @@
 				{/if}
 			</div>
 		{/if}
-
 
 		<div>
 			{#if editable}
@@ -328,6 +373,7 @@
 					</div>
 				</div>
 			{/if}
+
 			{#if vorm == "overzicht"}
 				{#if !editable}
 					<div class="rood font-bold">
@@ -350,43 +396,57 @@
 					>
 				</div>
 			{/if}
-			
-			
-			{#if (vorm != 'overzicht' && produkt.prijzen)}
-			<div class='grid2 p2'>
-				<div>Aantal</div><div>Prijs</div>
-			{#each produkt.prijzen as {aantal,prijs}}
-				<div>{aantal}</div> <div> {prijs.toFixed(2)}</div>
-			{/each}
-			</div>
+
+			<!--prijzen op detail view-->
+			{#if produkt.prijzen}
+				{#if vorm != "overzicht"}
+					<div class="grid2 p2 border">
+						<div class="font-bold">Aantal</div>
+						<div class="font-bold">Prijs</div>
+						{#each produkt.prijzen as { aantal, prijs }}
+							<div>{aantal}</div>
+							<div>{parseFloat(prijs).toFixed(2)}</div>
+						{/each}
+					</div>
+				{/if}
 			{/if}
-	
+
+			<!-- plaatjes onder prijzen-->
+			{#if vorm != "overzicht"}
+				{#if produkt.afbeeldingen}
+					<ul class="grid">
+						{#each produkt.afbeeldingen as afbeelding}
+							<li class="full">
+								<img
+									class="fit"
+									src={afbeelding}
+									alt={produkt.model}
+									on:click={() =>
+										(afbeeldingGroot = afbeelding)}
+								/>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			{/if}
+
+			<!-- aanvullende tekst met formattering-->
+			{#if vorm != "overzicht"}
+				<div>
+					{@html aanvullendetext}
+				</div>
+			{/if}
 		</div>
+
 		<!--plaatjes rechts bij overzicht-->
 
-				 
-		{#if vorm != 'overzicht'}
-		<div class="gridautorow">
-			{#if produkt.afbeeldingen}
-				<ul>
-					{#each produkt.afbeeldingen as afbeelding, i}
-						<li class="full" >
-							<img
-								class="fit"
-								src={afbeelding}
-								alt={produkt.model}
-							/>
-						</li>
-					{/each}
-				</ul>
-			{/if}
-		</div>
+		{#if produkt.afbeeldingen}
+			<img
+				class="fit"
+				src={produkt.afbeeldingen[0]}
+				alt={produkt.model}
+			/>
 		{/if}
-
-
-
-
-
 	</div>
 	<div>
 		<!-- plaatjes tonen bij editable om te kunnen -->
@@ -404,7 +464,6 @@
 									if (editable) dragover(e);
 								}}
 								on:dblclick={() => {
-									console.log(i);
 									produkt.afbeeldingen.splice(i, 1);
 									produkt.afbeeldingen = produkt.afbeeldingen;
 									update("afbeeldingen");
@@ -456,7 +515,7 @@
 				</div>
 			</div>
 
-			<!--prijsstaffel tonen bij uitgeklapte view en bijwerken bij editable-->
+			<!--prijsstaffel tonen bij bijwerken bij editable-->
 			<div class:cuttext={vorm != "overzicht"}>
 				<div class="p4">
 					<h3>Prijzen</h3>
@@ -469,26 +528,36 @@
 						{#each produkt.prijzen as prijs, i}
 							{#if editable}
 								<div class="grid">
-									<input type="number"
+									<input
+										type="number"
 										contenteditable="true"
 										bind:value={prijs.aantal}
 										on:keydown={(e) => {
-											if (e.key=='Tab')
+											if (e.key == "Tab")
 												update("prijzen");
-											}}
+										}}
 									/>
-									<input type="number"
+									<input
+										type="number"
 										contenteditable="true"
+										data-nr={i}
 										bind:value={prijs.prijs}
-										on:keydown={(e)=>{
-											if (e.key=='Tab'){
-												update("prijzen")
-												produkt.prijzen = [...produkt.prijzen,
-													{prijs: null,aantal: null}];
-										
-										}}}
-
-										
+										on:keydown={(e) => {
+											if (
+												e.key == "Tab" &&
+												e.target.dataset.nr ==
+													produkt.prijzen.length - 1
+											) {
+												update("prijzen");
+												produkt.prijzen = [
+													...produkt.prijzen,
+													{
+														prijs: null,
+														aantal: null,
+													},
+												];
+											}
+										}}
 									/>
 								</div>
 							{:else}
@@ -506,6 +575,20 @@
 			</div>
 		{/if}
 	</div>
+
+	{#if editable}
+		<div class="gridcol border">
+			<div
+				contenteditable
+				bind:innerHTML={produkt.aanvullen}
+				on:keyup={() => {
+					if (opslaan) clearTimeout(opslaan);
+					opslaan = setTimeout(() => update("aanvullen"), 500);
+				}}
+			/>
+			<div class="small">(omschrijving)</div>
+		</div>
+	{/if}
 </div>
 
 <style>

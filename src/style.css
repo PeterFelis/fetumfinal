@@ -196,7 +196,7 @@ h2 {
 .grid2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    hweight:100%
+    hweight: 100%
 }
 
 /* 2 colum grid, bij klein boven, bij groot naast elkaar */
@@ -219,7 +219,9 @@ h2 {
 
 
 .border {
-    border: 1px solid red;
+    border: 1px solid rgb(225, 225, 225);
+    padding: 1rem 2rem 1rem 2rem;
+    margin: 1rem 0 1rem 0;
 }
 
 .bgrood {
