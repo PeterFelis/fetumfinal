@@ -1,4 +1,5 @@
 <script>
+    import { goto } from "$app/navigation";
     import ProduktKaart from "$lib/ProduktKaart.svelte";
     export let data;
     let produkt = data.product[0];

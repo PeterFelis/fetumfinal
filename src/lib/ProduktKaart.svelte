@@ -8,6 +8,12 @@
 	const dispatch = createEventDispatcher();
 
 	export let produkt;
+	
+	let groteAfbeelding;
+	if (produkt.afbeeldingen){
+		groteAfbeelding = produkt.afbeeldingen[0];
+		console.log(groteAfbeelding);
+		}
 	export let vorm = "overzicht";
 
 	export let editable = false;
@@ -255,7 +261,10 @@
 		if (e.target.nodeName == "IMG") doelE = e.target;
 		if (e.target.nodeName == "LI") doelE = e.target.querySelector("img");
 	}
+
+	let disabledScroll = true;
 </script>
+
 
 <div
 	class="kaart"
@@ -411,24 +420,7 @@
 				{/if}
 			{/if}
 
-			<!-- plaatjes onder prijzen-->
-			{#if vorm != "overzicht"}
-				{#if produkt.afbeeldingen}
-					<ul class="grid">
-						{#each produkt.afbeeldingen as afbeelding}
-							<li class="full">
-								<img
-									class="fit"
-									src={afbeelding}
-									alt={produkt.model}
-									on:click={() =>
-										(afbeeldingGroot = afbeelding)}
-								/>
-							</li>
-						{/each}
-					</ul>
-				{/if}
-			{/if}
+			
 
 			<!-- aanvullende tekst met formattering-->
 			{#if vorm != "overzicht"}
@@ -438,15 +430,43 @@
 			{/if}
 		</div>
 
-		<!--plaatjes rechts bij overzicht-->
-
-		{#if produkt.afbeeldingen}
+		
+	  <!-- plaatjes op detailpagina-->
+	  <div> 
+	  
+	{#if vorm != "overzicht"}
+	 <div class='grid'>
+	  {#if produkt.afbeeldingen}
+		  <ul class="grid">
+			  {#each produkt.afbeeldingen as afbeelding}
+				  <li class="full">
+					  <img
+						  class="fit"
+						  src={afbeelding}
+						  alt={produkt.model}
+						  on:click={() => {
+							  groteAfbeelding = afbeelding;
+							  }}
+					  />
+				  </li>
+			  {/each}
+		  </ul>
+	  {/if}
+	  </div>
+	  <!--plaatjes rechts bij overzicht-->
+	  <div class='grid'>
+		{#if groteAfbeelding}
 			<img
 				class="fit"
-				src={produkt.afbeeldingen[0]}
+				src={groteAfbeelding}
 				alt={produkt.model}
 			/>
 		{/if}
+	  
+  	</div>
+	{/if}
+	</div>
+	
 	</div>
 	<div>
 		<!-- plaatjes tonen bij editable om te kunnen -->
