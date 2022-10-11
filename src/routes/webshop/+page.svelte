@@ -2,11 +2,16 @@
 	import Produkt from "$lib/ProduktKaart.svelte";
 	import { supabase } from "../../stores/supabase";
 	import settings from "../../stores/instellingen";
+	import { goto } from "$app/navigation";
 
-	export let data; // data van de serverside load!!
+	export let data; // data van de serverside load!!;
 
 	// op volgorder zetten, server levert gesorteerd aan
-	let volgorde = [...data.producten];
+	let volgorde = data.producten;
+	let cat = data.cat; // als terugkomt van kaart zorgen dat overzicht weer uptodate is
+	let type = data.type;
+	let model = data.model;
+
 	// categorien maken
 	const tijdcat = new Set();
 	let cats = volgorde;
@@ -24,8 +29,10 @@
 
 	let types = [];
 	let produkttype = "";
-	let geselecteerdecategorie = $settings.geselecteerdecategorie;
+	if (type) produkttype = type;
 
+	let geselecteerdecategorie = $settings.geselecteerdecategorie;
+	if (type) geselecteerdecategorie = cat;
 	let editable = false;
 
 	const categorieKeuze = () => {
@@ -137,6 +144,8 @@
 				.match({ type: tijd });
 		}
 	};
+
+	if (model) goto(`#${model}`);
 </script>
 
 <div class="container m2 h50 grid2r">

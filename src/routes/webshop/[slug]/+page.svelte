@@ -7,6 +7,14 @@
 </script>
 
 <div class="container">
-    <button on:click={() => history.back()}>terug </button>
     <ProduktKaart {produkt} {vorm} />
+    <button
+        on:click={() =>
+            goto(
+                `/webshop?cat=${produkt.categorie}&type=${produkt.type}&model=${produkt.model}`
+            )}
+    >
+        <span class="material-symbols-outlined"> arrow_back </span>
+        <span>terug naar overzicht</span>
+    </button>
 </div>

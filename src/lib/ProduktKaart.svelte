@@ -8,14 +8,13 @@
 	const dispatch = createEventDispatcher();
 
 	export let produkt;
-	
+
 	let groteAfbeelding;
-	if (produkt.afbeeldingen){
+	if (produkt.afbeeldingen) {
 		groteAfbeelding = produkt.afbeeldingen[0];
 		console.log(groteAfbeelding);
-		}
+	}
 	export let vorm = "overzicht";
-
 	export let editable = false;
 
 	let opslaan;
@@ -24,18 +23,22 @@
 	let prijzen = produkt.prijzen;
 
 	let lijst;
-
+	// dit is voor het drag en drop
 	let keuze,
 		keuzeE = null;
 	let doel,
 		doelE = null;
 
+	//prijzen automatisch op volgorde zetten
 	if (prijzen) {
 		prijzen.sort((a, b) => (a.aantal > b.aantal ? 1 : -1));
 		if (prijzen.length == 0) prijzen.push({ prijs: "--", aantal: "--" });
 	}
 
 	let huidigeType = produkt.type;
+
+	// hoever de winow gescrolled is om bij klikken geen springer te krijgen
+	let ypos;
 
 	function omzetten(text) {
 		// als leeg
@@ -265,6 +268,7 @@
 	let disabledScroll = true;
 </script>
 
+<svelte:window bind:scrollY={ypos} />
 
 <div
 	class="kaart"
@@ -273,7 +277,7 @@
 	}}
 >
 	<!-- plaatje een links laten zien bij algemeen overzicht -->
-	<div class="{vorm == 'overzicht' ? 'gridoverzicht' : 'grid2'} g1">
+	<div class="{vorm == 'overzicht' ? 'gridoverzicht' : 'grid2'} g2">
 		{#if vorm == "overzicht"}
 			<div class="">
 				{#if produkt.afbeeldingen}
@@ -420,7 +424,29 @@
 				{/if}
 			{/if}
 
-			
+			<div>
+				{#if vorm != "overzicht"}
+					<div class="grid p1">
+						{#if produkt.afbeeldingen}
+							<ul class="grid">
+								{#each produkt.afbeeldingen as afbeelding}
+									<li class="full">
+										<img
+											class="fit"
+											src={afbeelding}
+											alt={produkt.model}
+											on:click={() => {
+												groteAfbeelding = afbeelding;
+												scroll(0, 200);
+											}}
+										/>
+									</li>
+								{/each}
+							</ul>
+						{/if}
+					</div>
+				{/if}
+			</div>
 
 			<!-- aanvullende tekst met formattering-->
 			{#if vorm != "overzicht"}
@@ -430,43 +456,39 @@
 			{/if}
 		</div>
 
-		
-	  <!-- plaatjes op detailpagina-->
-	  <div> 
-	  
-	{#if vorm != "overzicht"}
-	 <div class='grid'>
-	  {#if produkt.afbeeldingen}
-		  <ul class="grid">
-			  {#each produkt.afbeeldingen as afbeelding}
-				  <li class="full">
-					  <img
-						  class="fit"
-						  src={afbeelding}
-						  alt={produkt.model}
-						  on:click={() => {
-							  groteAfbeelding = afbeelding;
-							  }}
-					  />
-				  </li>
-			  {/each}
-		  </ul>
-	  {/if}
-	  </div>
-	  <!--plaatjes rechts bij overzicht-->
-	  <div class='grid'>
-		{#if groteAfbeelding}
-			<img
-				class="fit"
-				src={groteAfbeelding}
-				alt={produkt.model}
-			/>
-		{/if}
-	  
-  	</div>
-	{/if}
-	</div>
-	
+		<!-- plaatjes op detailpagina-->
+		<div>
+			{#if vorm != "overzicht"}
+				<div class="grid p1">
+					{#if produkt.afbeeldingen}
+						<ul class="grid">
+							{#each produkt.afbeeldingen as afbeelding}
+								<li class="full">
+									<img
+										class="fit"
+										src={afbeelding}
+										alt={produkt.model}
+										on:click={() => {
+											groteAfbeelding = afbeelding;
+										}}
+									/>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+				</div>
+				<!--plaatjes rechts bij overzicht-->
+				<div class="grid">
+					{#if groteAfbeelding}
+						<img
+							class="fit"
+							src={groteAfbeelding}
+							alt={produkt.model}
+						/>
+					{/if}
+				</div>
+			{/if}
+		</div>
 	</div>
 	<div>
 		<!-- plaatjes tonen bij editable om te kunnen -->
