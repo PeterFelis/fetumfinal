@@ -112,6 +112,12 @@ h2 {
     min-height: 75vh;
 }
 
+.h100{
+    max-height: 100vh;
+    height:100vh;
+    min-height: 100vh;
+}
+
 .p1 {
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -142,6 +148,11 @@ h2 {
     margin-bottom: 4rem;
 }
 
+.page{
+    height: 80vh;
+    min-width: 100%;
+}
+
 .fullsize {
     width: 100vw;
     height: 100vh;
@@ -156,7 +167,6 @@ h2 {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    object-position: center center;
 }
 
 .fullwidth {
@@ -247,5 +257,12 @@ a {
     .grid2r {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: 1fr;
+    }
+    .page{
+        min-height: 100vh;
+    }
+
+    .fit{
+        object-fit: cover;
     }
 }

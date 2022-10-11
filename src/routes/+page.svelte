@@ -2,7 +2,7 @@
     <title>Hoi! start hier | Fetum</title>
 </svelte:head>
 
-<div class="rel top">
+<div class="rel page">
     <img
         class="fit"
         src="/afbeeldingen/hp-136.jpg"
@@ -21,8 +21,8 @@
             version="1.1"
             xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:svgjs="http://svgjs.com/svgjs"
-            width="2000"
-            height="560"
+            width="auto"
+            height="auto"
             preserveAspectRatio="none"
             viewBox="0 0 2000 560"
         >
@@ -130,7 +130,7 @@
             </g>
             <defs>
                 <mask id="SvgjsMask1177">
-                    <rect width="2000" height="560" fill="#ffffff" />
+                    <rect width="100%" height="560" fill="#ffffff" />
                 </mask>
                 <style>
                     @keyframes float1 {
@@ -185,8 +185,7 @@
         </svg>
     </div>
 
-    <div class="container-fluid">
-        <div class="grid">
+            <div class="grid3">
             <div class="svgblob">
                 <div class="rot">
                     <img
@@ -221,9 +220,9 @@
             </div>
         </div>
     </div>
-</div>
 
-<div class="container h50">
+
+<div class="container h75">
     <div class="grid2r m4">
         <div class="grid centergrid">
             <div>
@@ -265,14 +264,11 @@
 </svg>
 
 <style>
-    .top {
-        height: 60vh;
-    }
-
+  
     .introText {
         text-align: center;
         position: absolute;
-        bottom: 2rem;
+        bottom: 5rem;
         left: 0;
         width: 100%;
         margin: 0;
@@ -283,8 +279,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        min-width: 100%;
     }
 
     .svgblob {
@@ -308,12 +303,14 @@
         transform: rotate(-180deg);
     }
 
-    @media (min-width: 991px) {
-        .top {
-            height: 110vh;
-        }
+    .grid3{
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+    }
 
-        .introText {
+    @media (min-width: 991px) {
+       
+       .introText {
             padding: 0 10rem 0 10rem;
         }
 
