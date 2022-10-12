@@ -11,8 +11,7 @@
 
 	let groteAfbeelding;
 	if (produkt.afbeeldingen) {
-		groteAfbeelding = produkt.afbeeldingen[0];
-		console.log(groteAfbeelding);
+		groteAfbeelding = 0;
 	}
 	export let vorm = "overzicht";
 	export let editable = false;
@@ -38,7 +37,6 @@
 	let huidigeType = produkt.type;
 
 	// hoever de winow gescrolled is om bij klikken geen springer te krijgen
-	let ypos;
 
 	function omzetten(text) {
 		// als leeg
@@ -227,15 +225,6 @@
 		}
 	};
 
-	const onFileSelected = (e) => {
-		let image = e.target.files[0];
-		let reader = new FileReader();
-		reader.readAsDataURL(image);
-		reader.onload = (e) => {
-			avatar = e.target.result;
-		};
-	};
-
 	function dragStart(e) {
 		if (e.target == "li") keuzeE = e.target.querySelector("img");
 		else keuzeE = e.target;
@@ -264,11 +253,7 @@
 		if (e.target.nodeName == "IMG") doelE = e.target;
 		if (e.target.nodeName == "LI") doelE = e.target.querySelector("img");
 	}
-
-	let disabledScroll = true;
 </script>
-
-<svelte:window bind:scrollY={ypos} />
 
 <div
 	class="kaart"
@@ -282,7 +267,7 @@
 			<div class="">
 				{#if produkt.afbeeldingen}
 					<img
-						class="fit"
+						class="pas"
 						src={produkt.afbeeldingen[0]}
 						alt={produkt.model}
 					/>
@@ -424,20 +409,20 @@
 				{/if}
 			{/if}
 
+			<!-- afbeeldingen op detail niveau-->
 			<div>
 				{#if vorm != "overzicht"}
 					<div class="grid p1">
 						{#if produkt.afbeeldingen}
 							<ul class="grid">
-								{#each produkt.afbeeldingen as afbeelding}
+								{#each produkt.afbeeldingen as afbeelding, i}
 									<li class="full">
 										<img
 											class="fit"
 											src={afbeelding}
 											alt={produkt.model}
-											on:click={() => {
-												groteAfbeelding = afbeelding;
-												scroll(0, 200);
+											on:click|preventDefault|stopPropagation={() => {
+												groteAfbeelding = i;
 											}}
 										/>
 									</li>
@@ -457,41 +442,24 @@
 		</div>
 
 		<!-- plaatjes op detailpagina-->
-		<div>
-			{#if vorm != "overzicht"}
-				<div class="grid p1">
-					{#if produkt.afbeeldingen}
-						<ul class="grid">
-							{#each produkt.afbeeldingen as afbeelding}
-								<li class="full">
-									<img
-										class="fit"
-										src={afbeelding}
-										alt={produkt.model}
-										on:click={() => {
-											groteAfbeelding = afbeelding;
-										}}
-									/>
-								</li>
-							{/each}
-						</ul>
-					{/if}
-				</div>
-				<!--plaatjes rechts bij overzicht-->
-				<div class="grid">
-					{#if groteAfbeelding}
-						<img
-							class="fit"
-							src={groteAfbeelding}
-							alt={produkt.model}
-						/>
-					{/if}
-				</div>
-			{/if}
-		</div>
+
+		{#if vorm != "overzicht"}
+			<!--plaatjes recht bij detailview-->
+			<!-- hier zit het springerprobleem-->
+			<div class="grid">
+				{#if produkt.afbeeldingen}
+					<img
+						class="pas"
+						src={produkt.afbeeldingen[groteAfbeelding]}
+						alt={produkt.model}
+					/>
+				{/if}
+			</div>
+		{/if}
 	</div>
 	<div>
-		<!-- plaatjes tonen bij editable om te kunnen -->
+		<!-- alle plaatjes tonen bij editable om te kunnen verplaatsen-->
+		<!-- bestaand plaatje dubbelklikken om te verwijderen-->
 		{#if editable}
 			<div class="gridautorow">
 				{#if produkt.afbeeldingen}
@@ -524,6 +492,7 @@
 				{/if}
 			</div>
 
+			<!-- opladen afbeeldingen en ivoegen en verwijderen pdf-->
 			<div class="grid">
 				<div>
 					Afbeelding
@@ -618,6 +587,7 @@
 		{/if}
 	</div>
 
+	<!-- extra tekxt bij produkt invullen, wordt automatisch bewerkt door systeem-->
 	{#if editable}
 		<div class="gridcol border">
 			<div

@@ -159,6 +159,9 @@
 <div class="container">
 	<div class="border">
 		editabtle <input type="checkbox" bind:checked={editable} />
+		{#if editable}
+			<span class="material-symbols-outlined"> delete </span>
+		{/if}
 	</div>
 
 	<div class="allover">

@@ -16,6 +16,8 @@ body {
 
 
 
+
+
 .groen {
     color: var(--groen);
 }
@@ -169,6 +171,11 @@ h2 {
     object-fit: contain;
 }
 
+.pas {
+    width: 100%;
+    height: auto;
+}
+
 .fullwidth {
     width: 100%;
     height: auto;
@@ -206,7 +213,6 @@ h2 {
 .grid2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    hweight: 100%
 }
 
 /* 2 colum grid, bij klein boven, bij groot naast elkaar */
@@ -231,6 +237,13 @@ h2 {
     justify-self: center;
 }
 
+.gridcenter {
+    place-items: center;
+}
+
+.hand {
+    cursor: pointer;
+}
 
 .border {
     border: 1px solid rgb(225, 225, 225);

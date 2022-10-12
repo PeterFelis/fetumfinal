@@ -8,13 +8,14 @@
 
 <div class="container">
     <ProduktKaart {produkt} {vorm} />
-    <button
+    <div
+        class="grid1 hand gridcenter "
         on:click={() =>
             goto(
                 `/webshop?cat=${produkt.categorie}&type=${produkt.type}&model=${produkt.model}`
             )}
     >
-        <span class="material-symbols-outlined"> arrow_back </span>
+        <span class="material-symbols-outlined"> arrow_back</span>
         <span>terug naar overzicht</span>
-    </button>
+    </div>
 </div>
