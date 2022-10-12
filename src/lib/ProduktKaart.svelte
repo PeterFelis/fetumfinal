@@ -36,7 +36,8 @@
 
 	let huidigeType = produkt.type;
 
-	// hoever de winow gescrolled is om bij klikken geen springer te krijgen
+	//hulp waarde aktief tijdens deleten om fout te voorkomen
+    let deleten=false;
 
 	function omzetten(text) {
 		// als leeg
@@ -67,6 +68,21 @@
 	}
 
 	let aanvullendetext = omzetten(produkt.aanvullen);
+
+
+
+	const verwijderen = async (id) => {
+		let resultaat = await supabase
+  		.from('producten')
+  		.delete()
+  		.eq('id', id)
+		console.log (resultaat)
+		dispatch("verwijderd", { text: produkt.id });
+
+
+	}
+
+
 
 	const bijwerkenAfbeelding = async () => {
 		let nieuweafbeelding;
@@ -275,9 +291,25 @@
 			</div>
 		{/if}
 
+
 		<div>
 			{#if editable}
 				<div class="gridcol">
+					{#if deleten==false}
+					<div on:click={()=>{
+						deleten=true;
+					}}>delete {produkt.model}</div>
+					{/if}
+
+					{#if deleten}
+						<div on:click={()=>deleten=false}>
+						<h2>Zeker weten dat de {produkt.model} verwijderd moet worden?</h2>
+						Nee <div on:click={()=>{ 
+							verwijderen(produkt.id);
+							deleten=false}}>
+						ja</div>
+						</div>
+					{/if}
 					<input
 						class="h2"
 						type="text"

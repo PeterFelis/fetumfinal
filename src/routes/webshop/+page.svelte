@@ -270,6 +270,12 @@
 											produkttype = e.detail.text.nieuw;
 											types = types;
 										}}
+										on:verwijderd={(id) => {
+											produkten = produkten.filter(function(e){return e.id!=id});
+											console.log('te verwijderen uit lijst',id)
+										}}
+
+
 									/>
 								</div>
 							{:else if produkt.type == produkttype}
