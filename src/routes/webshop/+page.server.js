@@ -1,6 +1,6 @@
 import { supabase } from '../../stores/supabase';
 
-export async function load({ params, url }) {
+export async function load({ url }) {
     const { data: producten, error } = await supabase.from('producten')
         .select('*')
         .order('catVolgnr', { ascending: true })

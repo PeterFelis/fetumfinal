@@ -11,15 +11,19 @@
 	let cat = data.cat; // als terugkomt van kaart zorgen dat overzicht weer uptodate is
 	let type = data.type;
 	let model = data.model;
+	let categorien;
 
 	// categorien maken
-	const tijdcat = new Set();
-	let cats = volgorde;
+	const categorieenOpVolgordeZetten = () => {
+		let tijdcat = new Set();
+		let cats = volgorde;
 
-	cats.forEach((element) => {
-		tijdcat.add(element.categorie);
-	});
-	let categorien = [...tijdcat];
+		cats.forEach((element) => {
+			tijdcat.add(element.categorie);
+		});
+		categorien = [...tijdcat];
+	};
+	categorieenOpVolgordeZetten();
 
 	$: produkten = volgorde;
 	$: cats = categorien;
@@ -27,7 +31,6 @@
 	let typeLijstOpform = [];
 	let volgordeOpform = [];
 
-	let types = [];
 	let produkttype = "";
 	if (type) produkttype = type;
 
@@ -221,8 +224,6 @@
 											on:dragleave={dragPRODend}
 											on:dragover={dragOver}
 											draggable={editable}
-											on:click|stopPropagation={() =>
-												(produkttype = type)}
 										>
 											{produkt.model}
 										</li>
@@ -260,6 +261,7 @@
 											] = e.detail.text;
 											geselecteerdecategorie =
 												e.detail.text;
+											categorieenOpVolgordeZetten();
 										}}
 										on:typ={(e) => {
 											types[
@@ -268,14 +270,39 @@
 												)
 											] = e.detail.text.nieuw;
 											produkttype = e.detail.text.nieuw;
-											types = types;
+											categorieKeuze();
+										}}
+										on:model={(e) => {
+											console.log("model");
+											let pos = produkten.indexOf(
+												(i) =>
+													i.model ==
+													e.detail.text.huidig
+											);
+
+											// produkten[
+											// 	produkten.indexOf(
+											// 		(t) =>
+											// 			t.model ==
+											// 			e.detail.text.huidig
+											// 	)
+											// ] = e.detail.text.nieuw;
+											console.log("pos", pos);
+											//produkttype = e.detail.text.nieuw;
+											//categorieKeuze();
+											//produkten = produkten;
 										}}
 										on:verwijderd={(id) => {
-											produkten = produkten.filter(function(e){return e.id!=id});
-											console.log('te verwijderen uit lijst',id)
+											volgorde = produkten.filter(
+												function (e) {
+													return e.id != id;
+												}
+											);
+											console.log(
+												"te verwijderen uit lijst",
+												id
+											);
 										}}
-
-
 									/>
 								</div>
 							{:else if produkt.type == produkttype}
@@ -292,6 +319,7 @@
 											] = e.detail.text;
 											geselecteerdecategorie =
 												e.detail.text;
+											categorieenOpVolgordeZetten();
 										}}
 										on:typ={(e) => {
 											types[
@@ -300,7 +328,8 @@
 												)
 											] = e.detail.text.nieuw;
 											produkttype = e.detail.text.nieuw;
-											types = types;
+
+											categorieKeuze();
 										}}
 									/>
 								</div>
