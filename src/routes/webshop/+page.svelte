@@ -168,7 +168,12 @@
 	</div>
 
 	<div class="allover">
-		<div class="categorien" on:click={() => (produkttype = "")}>
+		<div
+			class="categorien"
+			on:click={() => {
+				produkttype = "";
+			}}
+		>
 			<div>
 				<div>
 					<h4 class="font-bold">Categorien</h4>
@@ -180,8 +185,9 @@
 									on:dragleave={dragCATEnd}
 									on:dragover={dragOver}
 									draggable={editable}
-									on:click={() => {
+									on:click|preventDefault|stopPropagation={() => {
 										geselecteerdecategorie = cat;
+										produkttype = "";
 										categorieKeuze();
 									}}
 								>
@@ -201,7 +207,7 @@
 									on:dragleave={dragTYPEend}
 									on:dragover={dragOver}
 									draggable={editable}
-									on:click|stopPropagation={() =>
+									on:click|preventDefault|stopPropagation={() =>
 										(produkttype = type)}
 								>
 									{type}
@@ -217,7 +223,7 @@
 					{#if produkten}
 						<ul bind:this={volgordeOpform} class="muis">
 							{#each produkten as produkt}
-								{#if produkt.type == produkttype}
+								{#if produkt.type == produkttype || (produkt.categorie == geselecteerdecategorie && produkttype == "")}
 									<a href="#{produkt.model}">
 										<li
 											on:dragstart={dragStart}
@@ -243,11 +249,12 @@
 					--> {produkttype}
 				{/if}
 			</h5>
+
 			<div class="shop">
 				{#await produkten then produkten}
 					{#each produkten as produkt}
 						{#if produkt.categorie == geselecteerdecategorie}
-							{#if produkttype == ""}
+							{#if produkt.type == produkttype || produkttype == ""}
 								<div>
 									<a id={produkt.model} />
 									<Produkt
@@ -302,34 +309,6 @@
 												"te verwijderen uit lijst",
 												id
 											);
-										}}
-									/>
-								</div>
-							{:else if produkt.type == produkttype}
-								<div>
-									<a id={produkt.model} />
-									<Produkt
-										{produkt}
-										{editable}
-										on:categorie={(e) => {
-											cats[
-												cats.indexOf(
-													geselecteerdecategorie
-												)
-											] = e.detail.text;
-											geselecteerdecategorie =
-												e.detail.text;
-											categorieenOpVolgordeZetten();
-										}}
-										on:typ={(e) => {
-											types[
-												types.indexOf(
-													e.detail.text.huidig
-												)
-											] = e.detail.text.nieuw;
-											produkttype = e.detail.text.nieuw;
-
-											categorieKeuze();
 										}}
 									/>
 								</div>
