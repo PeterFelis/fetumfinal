@@ -224,16 +224,18 @@
 						<ul bind:this={volgordeOpform} class="muis">
 							{#each produkten as produkt}
 								{#if produkt.type == produkttype || (produkt.categorie == geselecteerdecategorie && produkttype == "")}
-									<a href="#{produkt.model}">
-										<li
-											on:dragstart={dragStart}
-											on:dragleave={dragPRODend}
-											on:dragover={dragOver}
-											draggable={editable}
-										>
-											{produkt.model}
-										</li>
-									</a>
+									<li
+										on:dragstart={dragStart}
+										on:dragleave={dragPRODend}
+										on:dragover={dragOver}
+										draggable={editable}
+										on:click|preventDefault|stopPropagation={() => {
+											produkttype = produkt.type;
+											goto(`#${produkt.model}`);
+										}}
+									>
+										{produkt.model}
+									</li>
 								{/if}
 							{/each}
 						</ul>
