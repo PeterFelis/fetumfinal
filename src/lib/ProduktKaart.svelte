@@ -5,6 +5,9 @@
 	import { createEventDispatcher } from "svelte";
 	import { goto } from "$app/navigation";
 
+	import winkelwagen from"../stores/store";
+	$:cart = $winkelwagen;
+
 	const dispatch = createEventDispatcher();
 
 	export let produkt;
@@ -266,6 +269,7 @@
 		if (e.target.nodeName == "IMG") doelE = e.target;
 		if (e.target.nodeName == "LI") doelE = e.target.querySelector("img");
 	}
+
 </script>
 
 <div
@@ -438,14 +442,20 @@
 			<!--prijzen op detail view-->
 			{#if produkt.prijzen}
 				{#if vorm != "overzicht"}
-					<div class="grid2 p2 border">
+				<div class='border p2'>
+					<div class="grid">
 						<div class="font-bold">Aantal</div>
 						<div class="font-bold">Prijs</div>
-						{#each produkt.prijzen as { aantal, prijs }}
-							<div>{aantal}</div>
-							<div>{parseFloat(prijs).toFixed(2)}</div>
-						{/each}
+						<div></div>
 					</div>
+						{#each produkt.prijzen as { aantal, prijs }}
+							<div class='grid'>
+								<div>{aantal}</div>
+								<div>{parseFloat(prijs).toFixed(2)}</div>
+								<div on:click={() => {cart+={id:produkt.id, aantal: aantal }}}>bestellen</div>
+							</div>
+						{/each}
+				</div>
 				{/if}
 			{/if}
 
