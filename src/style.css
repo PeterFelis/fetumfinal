@@ -17,7 +17,6 @@ body {
 
 
 
-
 .groen {
     color: var(--groen);
 }
@@ -81,6 +80,11 @@ h2 {
 .heelgroot {
     font-size: 8rem;
     line-height: 6rem;
+}
+
+.klein {
+    font-size: .8rem;
+    line-height: 1rem;
 }
 
 .rechts {
@@ -263,6 +267,12 @@ button {
     margin: 0rem 0rem 1rem 0rem;
     padding: 0.5rem 2rem 0.5rem 2rem;
     border: none;
+    border-radius: 6px;
+}
+
+.knop {
+    padding: .2rem;
+    border: 1px solid var(--paars);
     border-radius: 6px;
 }
 

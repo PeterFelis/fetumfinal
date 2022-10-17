@@ -1,5 +1,7 @@
 import { writable } from "svelte/store";
 
-const winkelwagen = writable ([]);
+const winkelwagen = writable([]);
+
+
 export default winkelwagen;
 

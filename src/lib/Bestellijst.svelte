@@ -1,27 +1,43 @@
 <script>
     import winkelwagen from "../stores/store";
-    $:lijst=$winkelwagen;
+    $: lijst = $winkelwagen;
 </script>
 
-{#if lijst.length > 0}
-{#each lijst as item (item.naam)}
-<div>
-    naam:{item.naam} - 
-    kleur:{item.kleur} - 
-    aantal:{item.aantal} - 
+<div class="ww klein">
+    {#if lijst.length > 0}
+        {#each lijst as item}
+            <div class=" m1">
+                Type:{item.produkt.type}
+                Aantal:{item.aantal}
+                <!--
     prijs per stuk:{(item.prijsTotaal*1).toFixed(2)}
-    totaalprijs:{(item.aantal*item.prijsTotaal).toFixed(2)}
-    <button on:click={()=>{
-        // bij wissen bestelling uit de lijst halen 
-            lijst.splice(lijst.findIndex((e)=>e.naam==item.naam),1)
-            winkelwagen.set(lijst);
-            lijst=lijst;
-        }}>wissen</button>
-    
+    totaalprijs:{(item.aantal*item.prijsTotaal).toFixed(2)} -->
+                <div
+                    class="knop"
+                    on:click={() => {
+                        // bij wissen bestelling uit de lijst halen
+                        lijst.splice(
+                            lijst.findIndex((e) => e.id == item.id),
+                            1
+                        );
+                        winkelwagen.set(lijst);
+                        lijst = lijst;
+                    }}
+                >
+                    wissen
+                </div>
+            </div>
+        {/each}
+    {:else}
+        Niets in bestelling
+    {/if}
 </div>
-{/each}
-{:else}
- Niets in bestelling
-{/if}
 
-
+<style>
+    .ww {
+        position: absolute;
+        top: 7rem;
+        right: 3rem;
+        z-index: 1;
+    }
+</style>
