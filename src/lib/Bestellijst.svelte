@@ -1,13 +1,26 @@
 <script>
     import winkelwagen from "../stores/store";
+    let tijdlijst = [];
+
     $: lijst = $winkelwagen;
+    $: {
+        if (lijst.length > 1) {
+            let tijd = lijst[lijst.length - 1];
+            lijst.splice(lijst.length - 1, 1);
+            let waar = lijst.findIndex(
+                (item) => item.produkt.id == tijd.produkt.id
+            );
+            if (waar == -1) lijst.push(tijd);
+            else lijst[waar].aantal += tijd.aantal;
+        }
+    }
 </script>
 
 <div class="ww klein">
     {#if lijst.length > 0}
         {#each lijst as item}
             <div class=" m1">
-                Type:{item.produkt.type}
+                Type:{item.produkt.model}
                 Aantal:{item.aantal}
                 <!--
     prijs per stuk:{(item.prijsTotaal*1).toFixed(2)}

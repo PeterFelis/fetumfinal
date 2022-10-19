@@ -1,7 +1,7 @@
-import { writable } from "svelte/store";
+import { writable, derived } from "svelte/store";
+
 
 const winkelwagen = writable([]);
 
-
-export default winkelwagen;
+export default winkelwagen
 
