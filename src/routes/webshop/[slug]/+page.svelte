@@ -9,13 +9,26 @@
 <div class="container">
     <ProduktKaart {produkt} {vorm} />
     <div
-        class="grid1 hand gridcenter "
+        class="hand"
         on:click={() =>
             goto(
                 `/webshop?cat=${produkt.categorie}&type=${produkt.type}&model=${produkt.model}`
             )}
     >
-        <span class="material-symbols-outlined"> arrow_back</span>
-        <span>terug naar overzicht</span>
+        <div class="terug">
+            <span class="material-symbols-outlined"> arrow_back</span>
+            terug naar overzicht
+        </div>
     </div>
 </div>
+
+<style>
+    .terug {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        max-width: 30%;
+        justify-content: center;
+        align-items: center;
+        margin: 2rem auto 5rem auto;
+    }
+</style>

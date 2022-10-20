@@ -58,7 +58,6 @@
 			if (lijn[0] == "-") text += "<h4>" + lijn.substring(1) + "</h4>";
 			else {
 				let keyval = lijn.split(",");
-				console.log(keyval);
 				text += "<div class='grid'><div>" + keyval[0];
 				if (keyval.length > 1) text += "</div><div>" + keyval[1];
 
@@ -450,7 +449,7 @@
 								<div>{aantal}</div>
 								<div>{parseFloat(prijs).toFixed(2)}</div>
 								<div
-									on:click={() => {
+									on:click|preventDefault|stopPropagation={() => {
 										$winkelwagen = [
 											...$winkelwagen,
 											{
