@@ -1,8 +1,5 @@
 <script>
     import winkelwagen from "../stores/store";
-    import ProduktKaart from "./ProduktKaart.svelte";
-    let tijdlijst = [];
-
     $: lijst = $winkelwagen;
     // bestelde aantallen optellen, dus combineren
     $: {
@@ -19,8 +16,16 @@
 
     // // beste prijs kiezen voor de klant
     const besteprijs = (prijzen, aantal) => {
-        console.log("besteprijs ", typeof prijzen[0], typeof aantal);
-        return parseInt(prijzen[0]) * parseInt(aantal);
+        console.log(prijzen);
+        let besteprijs = prijzen[prijzen.length - 1].prijs;
+        let teller = prijzen.length - 1;
+        while (teller != 0 && prijzen[teller].aantal >= aantal) {
+            console.log(teller);
+            besteprijs = prijzen[teller].prijs;
+            teller--;
+        }
+        console.log("besteprijs ", besteprijs);
+        return besteprijs;
     };
 </script>
 
@@ -32,7 +37,10 @@
                 <div>{item.produkt.model}</div>
                 <div>{item.aantal} stuks</div>
                 <div>
-                    totaal {besteprijs(item.produkt.prijzen, item.aantal)}
+                    per stuk € {besteprijs(
+                        item.produkt.prijzen,
+                        item.aantal
+                    ).toFixed(2)}
                 </div>
                 <!--
     prijs per stuk:{(item.prijsTotaal*1).toFixed(2)}
@@ -72,5 +80,6 @@
         grid-template-columns: repeat(4, 1fr);
         justify-content: center;
         align-items: center;
+        font-size: 0.6rem;
     }
 </style>
