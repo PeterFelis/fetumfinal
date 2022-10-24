@@ -25,7 +25,9 @@
             teller--;
         }
         console.log("besteprijs ", besteprijs);
-        return besteprijs;
+        return `per stuk € ${besteprijs.toFixed(2)} totaal: ${
+            besteprijs * aantal.toFixed(2)
+        }`;
     };
 </script>
 
@@ -37,10 +39,7 @@
                 <div>{item.produkt.model}</div>
                 <div>{item.aantal} stuks</div>
                 <div>
-                    per stuk € {besteprijs(
-                        item.produkt.prijzen,
-                        item.aantal
-                    ).toFixed(2)}
+                    {besteprijs(item.produkt.prijzen, item.aantal)}
                 </div>
                 <!--
     prijs per stuk:{(item.prijsTotaal*1).toFixed(2)}
@@ -76,8 +75,6 @@
     }
 
     .wwlijst {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
         justify-content: center;
         align-items: center;
         font-size: 0.6rem;
