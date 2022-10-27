@@ -1,6 +1,7 @@
 <script>
     import winkelwagen from "../stores/store";
     $: lijst = $winkelwagen;
+    let zichtbaar = false;
     // bestelde aantallen optellen, dus combineren
     $: {
         if (lijst.length > 1) {
@@ -16,67 +17,84 @@
 
     // // beste prijs kiezen voor de klant
     const besteprijs = (prijzen, aantal) => {
-        console.log(prijzen);
-        let besteprijs = prijzen[prijzen.length - 1].prijs;
-        let teller = prijzen.length - 1;
-        while (teller != 0 && prijzen[teller].aantal >= aantal) {
-            console.log(teller);
-            besteprijs = prijzen[teller].prijs;
-            teller--;
+        let besteprijs = prijzen[0].prijs;
+        for (let teller = 0; teller < prijzen.length - 1; teller++) {
+            if (prijzen[teller + 1].aantal > aantal) break;
+            besteprijs = prijzen[teller + 1].prijs;
         }
-        console.log("besteprijs ", besteprijs);
-        return `per stuk € ${besteprijs.toFixed(2)} totaal: ${
-            besteprijs * aantal.toFixed(2)
-        }`;
+        return `<div>${besteprijs.toFixed(2)} </div>
+                <div>${(besteprijs * aantal).toFixed(2)}</div>`;
     };
 </script>
 
-<div class="ww klein">
-    {#if lijst.length > 0}
-        <h2>Bestellijst</h2>
-        <div class="wwlijst">
-            {#each lijst as item}
-                <div>{item.produkt.model}</div>
-                <div>{item.aantal} stuks</div>
-                <div>
-                    {besteprijs(item.produkt.prijzen, item.aantal)}
-                </div>
-                <!--
-    prijs per stuk:{(item.prijsTotaal*1).toFixed(2)}
-    totaalprijs:{(item.aantal*item.prijsTotaal).toFixed(2)} -->
-                <div
-                    class="knop"
-                    on:click={() => {
-                        // bij wissen bestelling uit de lijst halen
-                        lijst.splice(
-                            lijst.findIndex((e) => e.id == item.id),
-                            1
-                        );
-                        winkelwagen.set(lijst);
-                        lijst = lijst;
-                    }}
-                >
-                    wissen
-                </div>
-            {/each}
-        </div>
-    {:else}
-        Niets in bestelling
+<div on:click={() => (zichtbaar = !zichtbaar)}>
+    <span class="material-symbols-outlined">shopping_cart</span>
+    {#if lijst.length != 0}
+        {lijst.length}
     {/if}
 </div>
 
+{#if zichtbaar}
+    <div class="ww">
+        {#if lijst.length > 0}
+            <div class="wwlijst">
+                <div>type</div>
+                <div>Aantal</div>
+                <div>prijs</div>
+                <div>totaal</div>
+                <div />
+
+                {#each lijst as item (item.produkt.id)}
+                    <div><b>{item.produkt.model}</b></div>
+                    <div>{item.aantal} stuks</div>
+                    {besteprijs(item.produkt.prijzen, item.aantal)}
+
+                    <!--
+    prijs per stuk:{(item.prijsTotaal*1).toFixed(2)}
+    totaalprijs:{(item.aantal*item.prijsTotaal).toFixed(2)} -->
+                    <div
+                        class="knop"
+                        on:click={() => {
+                            // bij wissen bestelling uit de lijst halen
+                            lijst.splice(
+                                lijst.findIndex(
+                                    (e) => e.produkt.id == item.produkt.id
+                                ),
+                                1
+                            );
+                            winkelwagen.set(lijst);
+                            lijst = lijst;
+                        }}
+                    >
+                        wissen
+                    </div>
+                {/each}
+            </div>
+        {:else}
+            Niets in bestelling
+        {/if}
+    </div>
+{/if}
+
 <style>
     .ww {
-        position: absolute;
-        top: 7rem;
-        right: 3rem;
-        z-index: 1;
-        padding: 1rem;
+        font-size: 1rem;
+        width: auto;
+        position: fixed;
+        z-index: 100;
+        top: 5rem;
+        right: 20rem;
     }
 
     .wwlijst {
-        justify-content: center;
-        align-items: center;
-        font-size: 0.6rem;
+        font-size: 0.8rem;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        background: greenyellow;
+    }
+
+    .wwlijst > div {
+        padding: 0.4rem;
+        text-align: right;
     }
 </style>

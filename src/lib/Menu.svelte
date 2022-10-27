@@ -1,14 +1,16 @@
 <script>
+	import Bestellijst from "./Bestellijst.svelte";
 	let zichtbaar = false;
 </script>
 
-<div class="menugroot container">
+<div class="menugroot container menu">
 	<nav data-sveltekit-prefetch class="grid">
 		<a href="/">home</a>
 		<a href="/contact">contact</a>
 		<a href="/voorwaarden">voorwaarden</a>
 		<a href="/webshopinfo">webshopinfo</a>
 		<a href="/webshop">webshop</a>
+		<Bestellijst />
 	</nav>
 </div>
 
@@ -33,6 +35,7 @@
 	<a href="/voorwaarden">voorwaarden</a>
 	<a href="/webshopinfo">webshopinfo</a>
 	<a href="/webshop">webshop</a>
+	<Bestellijst />
 </nav>
 
 <style>
@@ -56,6 +59,11 @@
 		top: 0;
 		z-index: 20;
 		padding: 5rem;
+	}
+
+	.menu {
+		display: flex;
+		justify-content: center;
 	}
 
 	.zichtbaar {
