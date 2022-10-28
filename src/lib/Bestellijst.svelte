@@ -2,6 +2,8 @@
     import winkelwagen from "../stores/store";
     $: lijst = $winkelwagen;
     let zichtbaar = false;
+    let subtotaal = 0;
+
     // bestelde aantallen optellen, dus combineren
     $: {
         if (lijst.length > 1) {
@@ -22,10 +24,13 @@
             if (prijzen[teller + 1].aantal > aantal) break;
             besteprijs = prijzen[teller + 1].prijs;
         }
-        return `<div>${besteprijs.toFixed(2)} </div>
-                <div>${(besteprijs * aantal).toFixed(2)}</div>`;
+        return besteprijs.toFixed(2);
     };
 </script>
+
+<svelte:head>
+    <title>Kopen | Fetum</title>
+</svelte:head>
 
 <div on:click={() => (zichtbaar = !zichtbaar)}>
     <span class="material-symbols-outlined">shopping_cart</span>
@@ -35,20 +40,29 @@
 </div>
 
 {#if zichtbaar}
-    <div class="ww">
+    <div class="ww" on:click={() => (zichtbaar = false)}>
+        <h3>Bestellijst</h3>
         {#if lijst.length > 0}
+            lala
             <div class="wwlijst">
-                <div>type</div>
-                <div>Aantal</div>
-                <div>prijs</div>
-                <div>totaal</div>
+                <div>Type</div>
+                <div>Aantal<br />stuks</div>
+                <div>Prijs</div>
+                <div>Totaal</div>
                 <div />
 
                 {#each lijst as item (item.produkt.id)}
                     <div><b>{item.produkt.model}</b></div>
-                    <div>{item.aantal} stuks</div>
-                    {besteprijs(item.produkt.prijzen, item.aantal)}
-
+                    <div>{item.aantal}</div>
+                    <div>
+                        {besteprijs(item.produkt.prijzen, item.aantal)}
+                    </div>
+                    <div>
+                        {(
+                            besteprijs(item.produkt.prijzen, item.aantal) *
+                            item.aantal
+                        ).toFixed(2)}
+                    </div>
                     <!--
     prijs per stuk:{(item.prijsTotaal*1).toFixed(2)}
     totaalprijs:{(item.aantal*item.prijsTotaal).toFixed(2)} -->
@@ -83,7 +97,11 @@
         position: fixed;
         z-index: 100;
         top: 5rem;
-        right: 20rem;
+        right: 2rem;
+        max-width: 40%;
+        background-color: rgba(255, 255, 255, 0.4);
+        padding: 1rem;
+        text-align: right;
     }
 
     .wwlijst {
